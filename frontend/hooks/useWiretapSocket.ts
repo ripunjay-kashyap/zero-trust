@@ -31,6 +31,8 @@ export function useWiretapSocket() {
   const [isIntercepting, setIsIntercepting] = useState(false);
   const [isWarming, setIsWarming] = useState(false);
   const [stopwatch, setStopwatch] = useState(0.0);
+  const [isCarrierSpeaking, setIsCarrierSpeaking] = useState(false);
+  const [isCounterSpeaking, setIsCounterSpeaking] = useState(false);
   
   const [transcriptDeltas, setTranscriptDeltas] = useState<Array<{ word: string; entities: string[] }>>([]);
   const [partialTranscript, setPartialTranscript] = useState("");
@@ -126,6 +128,10 @@ export function useWiretapSocket() {
           try {
             const audio = new Audio(msg.audio_base64);
             carrierAudioRef.current = audio;
+            setIsCarrierSpeaking(true);
+            audio.onended = () => {
+              setIsCarrierSpeaking(false);
+            };
             audio.play().catch(() => {});
           } catch (e) {}
         }
@@ -218,15 +224,25 @@ export function useWiretapSocket() {
     // If audio is already loaded or in ref, play it
     if (counterAudioRef.current) {
       counterAudioRef.current.currentTime = 0;
+      setIsCounterSpeaking(true);
+      counterAudioRef.current.onended = () => {
+        setIsCounterSpeaking(false);
+      };
       counterAudioRef.current.play().catch((err) => {
         console.error("Audio playback error:", err);
+        setIsCounterSpeaking(false);
       });
     } else {
       // Fallback direct URL playback
       const audio = new Audio(`http://localhost:8000/api/audio/counter.wav?t=${Date.now()}`);
       counterAudioRef.current = audio;
+      setIsCounterSpeaking(true);
+      audio.onended = () => {
+        setIsCounterSpeaking(false);
+      };
       audio.play().catch((err) => {
         console.error("Audio playback error:", err);
+        setIsCounterSpeaking(false);
       });
     }
   }, []);
@@ -236,6 +252,8 @@ export function useWiretapSocket() {
     isIntercepting,
     isWarming,
     stopwatch,
+    isCarrierSpeaking,
+    isCounterSpeaking,
     transcriptDeltas,
     partialTranscript,
     swarmLanes,

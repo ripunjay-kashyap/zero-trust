@@ -6,11 +6,13 @@ import { CounterStrikeData } from "../hooks/useWiretapSocket";
 
 interface CounterStrikeDockProps {
   counterStrike: CounterStrikeData | null;
+  isCounterSpeaking?: boolean;
   onPlayAudio: () => void;
 }
 
 export const CounterStrikeDock: React.FC<CounterStrikeDockProps> = ({
   counterStrike,
+  isCounterSpeaking = false,
   onPlayAudio,
 }) => {
   if (!counterStrike) {
@@ -67,10 +69,18 @@ export const CounterStrikeDock: React.FC<CounterStrikeDockProps> = ({
       {/* Action Button: Speak Counter-Offer */}
       <button
         onClick={onPlayAudio}
-        className="w-full py-3 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/60 transition-all pulse-emerald cursor-pointer"
+        className={`w-full py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer ${
+          isCounterSpeaking
+            ? "bg-emerald-500 text-white shadow-emerald-600/80 ring-2 ring-emerald-300 animate-pulse"
+            : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/60 pulse-emerald"
+        }`}
       >
         <Volume2 className="w-5 h-5 fill-current" />
-        <span className="tracking-wide">SPEAK COUNTER-OFFER (KOKORO-82M TTS)</span>
+        <span className="tracking-wide">
+          {isCounterSpeaking
+            ? "SPEAKING COUNTER-OFFER (125 WPM DELIBERATE)..."
+            : "SPEAK COUNTER-OFFER (KOKORO-82M TTS @ 125 WPM)"}
+        </span>
       </button>
     </div>
   );

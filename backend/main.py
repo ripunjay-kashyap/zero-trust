@@ -66,19 +66,19 @@ COUNTER_WAV_FILE = AUDIO_DIR / "counter_strike_default.wav"
 MOCK_FMCSA_FILE = MOCK_DIR / "fmcsa_snapshot.html"
 MOCK_WATCHLIST_FILE = MOCK_DIR / "watchlist.html"
 
-# Deterministic words and timestamps for the 10-second stage injector audio
+# Deterministic words and timestamps for the 18-second stage injector audio (Daniel @ 140 WPM)
 DETERMINISTIC_STAGE_TIMELINE = [
     (0.0, "Look,", []),
-    (0.4, "I need", []),
-    (0.9, "$4,400", ["$4,400"]),
-    (1.4, "for Dallas-to-Atlanta.", []),
-    (2.3, "Texas diesel", []),
-    (2.8, "hit $4.15 today,", ["$4.15 TX Diesel"]),
-    (4.1, "and our carrier", []),
-    (4.6, "MC-884921", ["MC-884921"]),
-    (5.8, "has 15 inspected trucks", ["15 Trucks"]),
-    (7.2, "with a spotless", []),
-    (8.2, "FMCSA record.", ["Spotless FMCSA"]),
+    (0.8, "I need", []),
+    (1.8, "$4,400", ["$4,400"]),
+    (3.2, "for Dallas-to-Atlanta.", []),
+    (5.0, "Texas diesel", []),
+    (6.4, "hit $4.15 today,", ["$4.15 TX Diesel"]),
+    (9.0, "and our carrier", []),
+    (10.4, "MC-884921", ["MC-884921"]),
+    (12.8, "has 15 inspected trucks", ["15 Trucks"]),
+    (14.8, "with a spotless", []),
+    (16.5, "FMCSA record.", ["Spotless FMCSA"]),
 ]
 
 
@@ -277,7 +277,7 @@ async def run_injected_audio_wiretap(websocket: WebSocket, session_state: Dict[s
     await websocket.send_json({
         "type": "AUDIO_STREAM_STARTED",
         "audio_base64": f"data:audio/wav;base64,{b64_audio}",
-        "duration_sec": 10.0,
+        "duration_sec": 18.0,
     })
 
     # Background Swarm Launch Trigger helper

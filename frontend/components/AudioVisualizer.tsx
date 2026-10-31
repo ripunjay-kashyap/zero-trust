@@ -5,12 +5,14 @@ import { Radio, ShieldCheck, Zap } from "lucide-react";
 
 interface AudioVisualizerProps {
   isIntercepting: boolean;
+  isCarrierSpeaking?: boolean;
   transcriptDeltas: Array<{ word: string; entities: string[] }>;
   partialTranscript: string;
 }
 
 export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
   isIntercepting,
+  isCarrierSpeaking = false,
   transcriptDeltas,
   partialTranscript,
 }) => {
@@ -28,9 +30,13 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
       {/* Header Bar */}
       <div className="flex items-center justify-between pb-2 border-b border-[#1e293b]">
         <div className="flex items-center gap-2">
-          <Radio className={`w-4 h-4 ${isIntercepting ? "text-cyan-400 animate-pulse" : "text-slate-500"}`} />
+          <Radio className={`w-4 h-4 ${isCarrierSpeaking ? "text-cyan-400 animate-pulse" : "text-slate-500"}`} />
           <span className="text-xs font-mono font-semibold tracking-wider text-slate-300">
-            {isIntercepting ? "LIVE CARRIER WIRETAP CHANNEL #409" : "WIRETAP CHANNEL #409 (STANDBY)"}
+            {isCarrierSpeaking
+              ? "CARRIER AUDIO STREAM (DANIEL @ 140 WPM - MEASURED)"
+              : isIntercepting
+              ? "WIRETAP CHANNEL #409 (ACTIVE)"
+              : "WIRETAP CHANNEL #409 (STANDBY)"}
           </span>
         </div>
         <div className="flex items-center gap-3 text-[11px] font-mono text-slate-400">

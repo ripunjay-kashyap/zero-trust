@@ -15,6 +15,8 @@ export default function WarRoomHUD() {
     isIntercepting,
     isWarming,
     stopwatch,
+    isCarrierSpeaking,
+    isCounterSpeaking,
     transcriptDeltas,
     partialTranscript,
     swarmLanes,
@@ -44,6 +46,7 @@ export default function WarRoomHUD() {
           {/* Waveform & Streaming Transcript */}
           <AudioVisualizer
             isIntercepting={isIntercepting}
+            isCarrierSpeaking={isCarrierSpeaking}
             transcriptDeltas={transcriptDeltas}
             partialTranscript={partialTranscript}
           />
@@ -80,6 +83,7 @@ export default function WarRoomHUD() {
           {/* Voice Counter-Strike Dock */}
           <CounterStrikeDock
             counterStrike={counterStrike}
+            isCounterSpeaking={isCounterSpeaking}
             onPlayAudio={playCounterAudio}
           />
         </section>
