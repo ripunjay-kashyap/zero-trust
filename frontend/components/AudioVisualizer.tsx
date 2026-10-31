@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { Radio, Zap } from "lucide-react";
+import { Radio } from "lucide-react";
 
 interface AudioVisualizerProps {
   isIntercepting: boolean;
@@ -25,45 +25,46 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
   }, [transcriptDeltas]);
 
   return (
-    <div className="bg-[#0f172a] rounded-lg border border-[#1e293b] p-4 flex flex-col gap-3">
+    <div className="bg-[#11141c] rounded-xl border border-white/[0.08] p-4 flex flex-col gap-3">
       {/* Header Bar */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+      <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.08]">
         <div className="flex items-center gap-2">
           <Radio
             className={`w-4 h-4 ${
-              isCarrierSpeaking ? "text-cyan-400" : "text-slate-500"
+              isCarrierSpeaking ? "text-[#e5484d]" : "text-[#7a8296]"
             }`}
           />
-          <span className="text-xs font-mono font-semibold tracking-wide text-slate-200">
+          <span className="text-xs font-medium text-[#eef0f5]">
             {isCarrierSpeaking
-              ? "CARRIER AUDIO STREAM (DANIEL @ 140 WPM - MEASURED)"
+              ? "Carrier audio stream · Daniel (140 WPM)"
               : isIntercepting
-              ? "WIRETAP CHANNEL #409 (ACTIVE)"
-              : "WIRETAP CHANNEL #409 (STANDBY)"}
+              ? "Wiretap channel #409 · Active"
+              : "Wiretap channel #409 · Standby"}
           </span>
         </div>
-        <div className="flex items-center gap-3 text-xs font-mono text-slate-300">
-          <span>DAL → ATL</span>
-          <span className="text-red-400 font-bold">$4,400 QUOTE</span>
+        <div className="flex items-center gap-3 text-xs font-mono text-[#a3a9b8]">
+          <span>Dallas → Atlanta</span>
+          <span className="text-[#e5484d] font-medium tabular-nums">$4,400 quote</span>
         </div>
       </div>
 
-      {/* Cyan Audio Waveform Instrument */}
-      <div className="h-10 bg-[#030712] rounded border border-[#1e293b] px-3 flex items-center justify-between gap-1 overflow-hidden">
-        {Array.from({ length: 44 }).map((_, i) => {
-          let heightPct = 12;
+      {/* Audio Waveform Meter */}
+      <div className="h-9 bg-[#07080d] rounded-lg border border-white/[0.08] px-3 flex items-center justify-between gap-1 overflow-hidden">
+        {Array.from({ length: 48 }).map((_, i) => {
+          let heightPct = 14;
           if (isIntercepting || isCarrierSpeaking) {
-            // Predictable, polished audio visualizer pattern
-            const wave = Math.sin(i * 0.45) * 0.5 + 0.5;
-            heightPct = Math.round(wave * 65 + 20);
+            const wave = Math.sin(i * 0.42) * 0.45 + 0.55;
+            heightPct = Math.round(wave * 60 + 20);
           }
           return (
             <div
               key={i}
-              className={`w-1 rounded-full transition-all duration-100 ${
-                isIntercepting || isCarrierSpeaking
-                  ? "bg-cyan-400"
-                  : "bg-slate-700/40"
+              className={`w-1 rounded-sm transition-all duration-100 ${
+                isCarrierSpeaking
+                  ? "bg-[#a3a9b8]"
+                  : isIntercepting
+                  ? "bg-[#7a8296]"
+                  : "bg-[#1a1e28]"
               }`}
               style={{ height: `${heightPct}%` }}
             />
@@ -71,24 +72,23 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
         })}
       </div>
 
-      {/* Streaming High-Contrast Transcript Box */}
+      {/* Live Transcript Stream */}
       <div
         ref={containerRef}
-        className="h-28 overflow-y-auto bg-[#030712] rounded border border-[#1e293b] p-3 text-slate-100 text-sm leading-relaxed"
+        className="h-28 overflow-y-auto bg-[#07080d] rounded-lg border border-white/[0.08] p-3 text-xs leading-relaxed text-[#eef0f5]"
       >
         {transcriptDeltas.length === 0 ? (
-          <div className="h-full flex items-center text-slate-400 text-xs font-mono">
-            Waiting for audio intercept stream. Click &apos;INTERCEPT CALL #409&apos; to begin...
+          <div className="h-full flex items-center text-[#7a8296] text-xs">
+            Waiting for audio stream. Click &ldquo;Intercept Call #409&rdquo; to begin.
           </div>
         ) : (
-          <div className="flex flex-wrap items-baseline gap-2">
+          <div className="flex flex-wrap items-baseline gap-1.5">
             {transcriptDeltas.map((item, idx) => {
               const hasEntity = item.entities && item.entities.length > 0;
               return (
                 <span key={idx} className="inline-block">
                   {hasEntity ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded font-mono font-semibold text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                      <Zap className="w-3 h-3 text-amber-400" />
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-mono font-medium bg-[#1a1e28] text-[#d97706] border border-[#d97706]/30">
                       {item.word}
                     </span>
                   ) : (

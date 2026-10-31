@@ -9,15 +9,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#080c14",
-        surface: "#0f172a",
-        "surface-card": "#131d31",
-        "border-dark": "#1e293b",
-        tactical: {
-          cyan: "#06b6d4",
-          red: "#ef4444",
-          amber: "#f59e0b",
-          emerald: "#10b981",
+        background: "#0b0d14",
+        surface: {
+          deep: "#07080d",
+          page: "#0b0d14",
+          card: "#11141c",
+          raised: "#1a1e28",
+        },
+        ink: {
+          hairline: "rgba(238, 240, 245, 0.08)",
+          primary: "#eef0f5",
+          secondary: "#a3a9b8",
+          muted: "#7a8296",
+        },
+        semantic: {
+          crimson: "#e5484d",
+          pine: "#4cc38a",
+          amber: "#d97706",
         },
       },
       fontFamily: {

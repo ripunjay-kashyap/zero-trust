@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AlertOctagon, TrendingDown, Building2 } from "lucide-react";
+import { AlertCircle, ArrowDownRight } from "lucide-react";
 import { BluffReceipt } from "../hooks/useWiretapSocket";
 
 interface BluffReceiptCardProps {
@@ -9,83 +9,78 @@ interface BluffReceiptCardProps {
 }
 
 export const BluffReceiptCard: React.FC<BluffReceiptCardProps> = ({ receipt }) => {
-  const isRed = receipt.badge_color === "red" || receipt.severity.includes("CRITICAL");
-  const isAmber = !isRed;
+  const isCritical = receipt.badge_color === "red" || receipt.severity.includes("CRITICAL");
 
   return (
-    <div
-      className={`rounded-lg border p-4 transition-colors ${
-        isRed
-          ? "bg-red-950/20 border-red-500/50"
-          : "bg-amber-950/20 border-amber-500/50"
-      }`}
-    >
-      {/* Title & Severity Badge */}
-      <div className="flex items-center justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2 font-bold text-xs tracking-wide text-white">
-          {isRed ? (
-            <AlertOctagon className="w-4 h-4 text-red-400" />
-          ) : (
-            <TrendingDown className="w-4 h-4 text-amber-400" />
-          )}
-          <span>{receipt.title}</span>
+    <div className="rounded-xl border border-white/[0.08] bg-[#11141c] p-3.5 flex flex-col gap-3">
+      {/* Header & Severity */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <AlertCircle
+            className={`w-4 h-4 ${
+              isCritical ? "text-[#e5484d]" : "text-[#d97706]"
+            }`}
+          />
+          <span className="text-xs font-medium text-[#eef0f5]">
+            {receipt.title}
+          </span>
         </div>
 
         <span
-          className={`font-mono text-xs font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${
-            isRed
-              ? "bg-red-950/60 text-red-300 border-red-600/80"
-              : "bg-amber-950/60 text-amber-300 border-amber-600/80"
+          className={`text-[11px] font-mono px-2 py-0.5 rounded border ${
+            isCritical
+              ? "bg-[#e5484d]/10 text-[#e5484d] border-[#e5484d]/30"
+              : "bg-[#d97706]/10 text-[#d97706] border-[#d97706]/30"
           }`}
         >
-          {receipt.severity}
+          {isCritical ? "Critical" : "Warning"}
         </span>
       </div>
 
-      {/* Claimed vs Truth Comparison Grid */}
-      <div className="grid grid-cols-2 gap-3 text-xs bg-[#030712] rounded p-3 border border-[#1e293b] mb-3 font-mono">
+      {/* Comparison Grid */}
+      <div className="grid grid-cols-2 gap-2 bg-[#07080d] rounded-lg p-2.5 border border-white/[0.06] text-xs font-mono">
         <div>
-          <div className="text-xs text-slate-400 uppercase tracking-wide">
+          <div className="text-[11px] text-[#7a8296]">
             {receipt.claimed_label}
           </div>
-          <div className="text-red-400 font-bold text-sm mt-1 tabular-nums">
+          <div className="text-[#e5484d] font-medium text-sm mt-0.5 tabular-nums">
             {receipt.claimed_value}
           </div>
         </div>
         <div>
-          <div className="text-xs text-slate-400 uppercase tracking-wide">
+          <div className="text-[11px] text-[#7a8296]">
             {receipt.actual_label}
           </div>
-          <div className="text-emerald-400 font-bold text-sm mt-1 tabular-nums">
+          <div className="text-[#4cc38a] font-medium text-sm mt-0.5 tabular-nums">
             {receipt.actual_value}
           </div>
         </div>
       </div>
 
-      {/* Delta Discrepancy Bar */}
-      <div className="text-xs font-mono font-semibold text-slate-300 flex items-center justify-between py-1">
-        <span className="text-slate-400">DISCREPANCY:</span>
+      {/* Discrepancy Meta */}
+      <div className="flex items-center justify-between text-xs font-mono px-0.5">
+        <span className="text-[#7a8296]">Discrepancy</span>
         <span
-          className={`font-bold tabular-nums ${
-            isRed ? "text-red-400" : "text-amber-400"
+          className={`font-medium tabular-nums ${
+            isCritical ? "text-[#e5484d]" : "text-[#d97706]"
           }`}
         >
           {receipt.discrepancy}
         </span>
       </div>
 
-      {/* High-Contrast Red DOM Screenshot Proof */}
+      {/* Live DOM Evidence Crop */}
       {receipt.screenshot && (
-        <div className="mt-3 pt-3 border-t border-[#1e293b]">
-          <div className="text-xs font-mono text-slate-300 mb-2 flex items-center justify-between">
-            <span className="font-semibold text-slate-400">LIVE DOM PROOF (FMCSA SAFER):</span>
-            <span className="text-red-400 font-bold">4px #FF0033 HIGHLIGHT</span>
+        <div className="pt-2 border-t border-white/[0.06] flex flex-col gap-1.5">
+          <div className="flex items-center justify-between text-[11px] font-mono text-[#7a8296]">
+            <span>Registry evidence · FMCSA SAFER</span>
+            <span className="text-[#e5484d]">Highlighted DOM crop</span>
           </div>
-          <div className="rounded overflow-hidden border-2 border-red-500 bg-white">
+          <div className="rounded-lg overflow-hidden border border-[#e5484d]/40 bg-white">
             <img
               src={receipt.screenshot}
               alt="FMCSA SAFER Highlighted Proof"
-              className="w-full object-contain max-h-36 block"
+              className="w-full object-contain max-h-32 block"
             />
           </div>
         </div>

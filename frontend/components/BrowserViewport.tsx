@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Globe, Search, ShieldCheck, Radio, CheckCircle2 } from "lucide-react";
+import { Globe, Search, ShieldCheck } from "lucide-react";
 
 interface BrowserViewportProps {
   swarmLanes: {
@@ -13,8 +13,6 @@ interface BrowserViewportProps {
 
 export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) => {
   const [host, setHost] = useState("localhost");
-  const [streamFailed, setStreamFailed] = useState(false);
-  const [viewMode, setViewMode] = useState<"stream" | "mirror">("mirror");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -22,80 +20,74 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
     }
   }, []);
 
-  // Live stream detection
-  const hasLiveStream = Boolean(
-    swarmLanes.lane3.streamUrl &&
-      (swarmLanes.lane3.streamUrl.includes("tinyfish.io") ||
-        (swarmLanes.lane3.streamUrl.startsWith("http") &&
-          !swarmLanes.lane3.streamUrl.includes("/mock/watchlist/")))
-  );
-
   const fmcsaUrl = `http://${host}:8000/mock/fmcsa/884921`;
   const watchlistMirrorUrl = `http://${host}:8000/mock/watchlist/884921`;
 
+  const getStatusBadge = (status: "STANDBY" | "HUNTING" | "VERIFIED") => {
+    if (status === "VERIFIED") {
+      return (
+        <span className="text-[11px] font-mono px-2 py-0.5 rounded border bg-[#4cc38a]/10 text-[#4cc38a] border-[#4cc38a]/30">
+          Verified
+        </span>
+      );
+    }
+    if (status === "HUNTING") {
+      return (
+        <span className="text-[11px] font-mono px-2 py-0.5 rounded border bg-[#d97706]/10 text-[#d97706] border-[#d97706]/30">
+          Verifying...
+        </span>
+      );
+    }
+    return (
+      <span className="text-[11px] font-mono px-2 py-0.5 rounded border bg-[#1a1e28] text-[#7a8296] border-white/[0.08]">
+        Standby
+      </span>
+    );
+  };
+
   return (
     <div className="flex flex-col gap-3 h-full select-none">
-      {/* Pane 1: TinyFetch Regional Diesel Check */}
-      <div className="bg-[#0f172a] rounded-lg border border-[#1e293b] p-3 flex flex-col gap-2">
+      {/* Lane 1: Regional Diesel Price Check via TinyFetch */}
+      <div className="bg-[#11141c] rounded-xl border border-white/[0.08] p-3 flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Globe className="w-4 h-4 text-cyan-400" />
-            <span className="font-mono text-xs font-bold text-slate-200">
-              LANE 1: TINYFETCH REGIONAL DIESEL INDEX
+            <Globe className="w-4 h-4 text-[#7a8296]" />
+            <span className="text-xs font-medium text-[#eef0f5]">
+              Lane 1 · Regional diesel index (TinyFetch)
             </span>
           </div>
-          <span
-            className={`font-mono text-xs font-bold px-2 py-0.5 rounded border uppercase ${
-              swarmLanes.lane1.status === "VERIFIED"
-                ? "bg-amber-950/60 text-amber-300 border-amber-500/80"
-                : swarmLanes.lane1.status === "HUNTING"
-                ? "bg-cyan-950/60 text-cyan-300 border-cyan-500/80"
-                : "bg-[#030712] text-slate-400 border-[#1e293b]"
-            }`}
-          >
-            {swarmLanes.lane1.status}
-          </span>
+          {getStatusBadge(swarmLanes.lane1.status)}
         </div>
 
-        <div className="bg-[#030712] rounded border border-[#1e293b] p-3 flex items-center justify-between text-xs font-mono">
+        <div className="bg-[#07080d] rounded-lg border border-white/[0.06] p-2.5 flex items-center justify-between text-xs font-mono">
           <div>
-            <span className="text-slate-400">EIA / AAA TEXAS SPOT: </span>
-            <span className="text-emerald-400 font-bold tabular-nums">$3.39 / gal</span>
+            <span className="text-[#7a8296]">EIA/AAA Texas spot: </span>
+            <span className="text-[#4cc38a] font-medium tabular-nums">$3.39 / gal</span>
           </div>
           <div>
-            <span className="text-slate-400">CLAIMED: </span>
-            <span className="text-red-400 font-bold tabular-nums">$4.15 / gal</span>
+            <span className="text-[#7a8296]">Claimed: </span>
+            <span className="text-[#e5484d] font-medium tabular-nums">$4.15 / gal</span>
           </div>
-          <span className="px-2 py-0.5 rounded bg-amber-950/60 text-amber-300 font-bold border border-amber-500/50 tabular-nums">
-            +$0.76/GAL BLUFF
+          <span className="px-1.5 py-0.5 rounded bg-[#d97706]/10 text-[#d97706] font-medium border border-[#d97706]/30 tabular-nums">
+            +$0.76/gal bluff
           </span>
         </div>
       </div>
 
-      {/* Pane 2: FMCSA SAFER Portal Mirror Viewport */}
-      <div className="bg-[#0f172a] rounded-lg border border-[#1e293b] p-3 flex-1 flex flex-col gap-2 min-h-[220px]">
+      {/* Lane 2: FMCSA SAFER Portal Viewport */}
+      <div className="bg-[#11141c] rounded-xl border border-white/[0.08] p-3 flex-1 flex flex-col gap-2 min-h-[220px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Search className="w-4 h-4 text-red-400" />
-            <span className="font-mono text-xs font-bold text-slate-200">
-              LANE 2: FMCSA SAFER COMPANY SNAPSHOT (MC-884921)
+            <Search className="w-4 h-4 text-[#7a8296]" />
+            <span className="text-xs font-medium text-[#eef0f5]">
+              Lane 2 · FMCSA SAFER company snapshot (MC-884921)
             </span>
           </div>
-          <span
-            className={`font-mono text-xs font-bold px-2 py-0.5 rounded border uppercase ${
-              swarmLanes.lane2.status === "VERIFIED"
-                ? "bg-red-950/60 text-red-300 border-red-500/80"
-                : swarmLanes.lane2.status === "HUNTING"
-                ? "bg-cyan-950/60 text-cyan-300 border-cyan-500/80"
-                : "bg-[#030712] text-slate-400 border-[#1e293b]"
-            }`}
-          >
-            {swarmLanes.lane2.status}
-          </span>
+          {getStatusBadge(swarmLanes.lane2.status)}
         </div>
 
         {/* Embedded Iframe of FMCSA SAFER Mirror */}
-        <div className="flex-1 rounded border border-[#1e293b] overflow-hidden bg-white relative">
+        <div className="flex-1 rounded-lg border border-white/[0.08] overflow-hidden bg-white relative">
           <iframe
             src={fmcsaUrl}
             title="FMCSA SAFER Mirror"
@@ -105,82 +97,31 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
         </div>
       </div>
 
-      {/* Pane 3: Carrier Watchlist & TinyFish SSE Viewport */}
-      <div className="bg-[#0f172a] rounded-lg border border-[#1e293b] p-3 flex-1 flex flex-col gap-2 min-h-[220px]">
+      {/* Lane 3: Carrier Watchlist & Virtual Office Viewport */}
+      <div className="bg-[#11141c] rounded-xl border border-white/[0.08] p-3 flex-1 flex flex-col gap-2 min-h-[220px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-red-400" />
-            <span className="font-mono text-xs font-bold text-slate-200">
-              LANE 3: TINYAGENT WATCHLIST & VIRTUAL OFFICE SSE
+            <ShieldCheck className="w-4 h-4 text-[#7a8296]" />
+            <span className="text-xs font-medium text-[#eef0f5]">
+              Lane 3 · CarrierWatch intelligence stream
             </span>
           </div>
-
           <div className="flex items-center gap-2">
-            {/* View Mode Toggle if live stream URL available */}
-            {hasLiveStream && !streamFailed ? (
-              <div className="flex items-center rounded border border-[#1e293b] bg-[#030712] p-0.5 text-xs font-mono">
-                <button
-                  onClick={() => setViewMode("stream")}
-                  className={`px-2 py-0.5 rounded transition-colors ${
-                    viewMode === "stream"
-                      ? "bg-cyan-950/80 text-cyan-300 border border-cyan-500/50 font-bold"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  LIVE STREAM
-                </button>
-                <button
-                  onClick={() => setViewMode("mirror")}
-                  className={`px-2 py-0.5 rounded transition-colors ${
-                    viewMode === "mirror"
-                      ? "bg-red-950/80 text-red-300 border border-red-500/50 font-bold"
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
-                >
-                  LOCAL MIRROR
-                </button>
-              </div>
-            ) : (
-              <span className="font-mono text-xs text-slate-400 px-2 py-0.5 rounded bg-[#030712] border border-[#1e293b]">
-                VERIFIED MIRROR
-              </span>
-            )}
-
-            <span
-              className={`font-mono text-xs font-bold px-2 py-0.5 rounded border uppercase ${
-                swarmLanes.lane3.status === "VERIFIED"
-                  ? "bg-red-950/60 text-red-300 border-red-500/80"
-                  : swarmLanes.lane3.status === "HUNTING"
-                  ? "bg-cyan-950/60 text-cyan-300 border-cyan-500/80"
-                  : "bg-[#030712] text-slate-400 border-[#1e293b]"
-              }`}
-            >
-              {swarmLanes.lane3.status}
+            <span className="text-[11px] font-mono text-[#7a8296] px-1.5 py-0.5 rounded bg-[#1a1e28] border border-white/[0.08]">
+              Portal mirror
             </span>
+            {getStatusBadge(swarmLanes.lane3.status)}
           </div>
         </div>
 
-        {/* Embedded Live Streaming Viewport or Clean Local Watchlist Mirror */}
-        <div className="flex-1 rounded border border-[#1e293b] overflow-hidden bg-[#030712] relative">
-          {viewMode === "stream" && hasLiveStream && !streamFailed && swarmLanes.lane3.streamUrl ? (
-            <iframe
-              src={swarmLanes.lane3.streamUrl}
-              title="TinyFish Live Browser Viewport"
-              className="w-full h-full border-0 select-none pointer-events-auto"
-              onError={() => {
-                setStreamFailed(true);
-                setViewMode("mirror");
-              }}
-              loading="eager"
-            />
-          ) : (
-            <iframe
-              src={watchlistMirrorUrl}
-              title="Carrier Watchlist Portal Mirror"
-              className="w-full h-full border-0 select-none pointer-events-auto"
-              loading="eager"
-            />
-          )}
+        {/* Embedded CarrierWatch Intelligence Portal */}
+        <div className="flex-1 rounded-lg border border-white/[0.08] overflow-hidden bg-[#07080d] relative">
+          <iframe
+            src={watchlistMirrorUrl}
+            title="Carrier Watchlist Portal Mirror"
+            className="w-full h-full border-0 select-none pointer-events-auto"
+            loading="eager"
+          />
         </div>
       </div>
     </div>
