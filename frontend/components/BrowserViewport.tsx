@@ -46,9 +46,9 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
   };
 
   return (
-    <div className="flex flex-col gap-3 h-full min-h-0 select-none">
+    <div className="flex flex-col gap-5 select-none">
       {/* Lane 1: Regional Diesel Price Check via TinyFetch */}
-      <div className="shrink-0 bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex flex-col gap-2">
+      <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-4 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Globe className="w-3.5 h-3.5 text-white/50" />
@@ -59,7 +59,7 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
           {getStatusBadge(swarmLanes.lane1.status)}
         </div>
 
-        <div className="bg-black/60 rounded-xl border border-white/[0.04] p-2.5 flex items-center justify-between text-xs font-mono">
+        <div className="bg-black/60 rounded-xl border border-white/[0.04] p-3 flex items-center justify-between text-xs font-mono">
           <div>
             <span className="text-white/40">Texas Spot: </span>
             <span className="text-white font-medium tabular-nums">$3.39 / gal</span>
@@ -68,14 +68,14 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
             <span className="text-white/40">Claimed: </span>
             <span className="text-white/60 font-medium tabular-nums line-through">$4.15 / gal</span>
           </div>
-          <span className="px-2 py-0.5 rounded-full bg-white/10 text-white font-medium border border-white/15 tabular-nums text-[11px]">
+          <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white font-medium border border-white/15 tabular-nums text-[11px]">
             +$0.76/gal markup
           </span>
         </div>
       </div>
 
-      {/* Lane 2: FMCSA SAFER Portal Viewport */}
-      <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex-1 min-h-0 flex flex-col gap-2">
+      {/* Lane 2: FMCSA SAFER Portal Viewport (Generous Full-Page Height) */}
+      <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-4 flex flex-col gap-3 h-[460px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Search className="w-3.5 h-3.5 text-white/50" />
@@ -97,8 +97,8 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
         </div>
       </div>
 
-      {/* Lane 3: Carrier Watchlist & Virtual Office Viewport */}
-      <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex-1 min-h-0 flex flex-col gap-2">
+      {/* Lane 3: Carrier Watchlist & Virtual Office Viewport (Generous Full-Page Height) */}
+      <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-4 flex flex-col gap-3 h-[420px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-3.5 h-3.5 text-white/50" />

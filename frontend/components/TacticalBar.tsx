@@ -21,7 +21,7 @@ export const TacticalBar: React.FC<TacticalBarProps> = ({
   onPrewarm,
 }) => {
   return (
-    <header className="h-14 px-6 bg-black border-b border-white/[0.08] flex items-center justify-between select-none">
+    <header className="sticky top-0 z-50 h-14 px-6 backdrop-blur-md bg-black/80 border-b border-white/[0.08] flex items-center justify-between select-none">
       {/* Brand & Status */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2.5">

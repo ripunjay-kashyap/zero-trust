@@ -28,8 +28,8 @@ export default function WarRoomHUD() {
   } = useWiretapSocket();
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-hidden bg-black select-none text-white">
-      {/* Top Tactical Navigation Bar */}
+    <div className="min-h-screen bg-black select-none text-white flex flex-col">
+      {/* Top Tactical Navigation Bar (Sticky with Blur) */}
       <TacticalBar
         isConnected={isConnected}
         isIntercepting={isIntercepting}
@@ -39,10 +39,10 @@ export default function WarRoomHUD() {
         onPrewarm={prewarmSwarm}
       />
 
-      {/* Main 2-Column Tactical Grid */}
-      <main className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-1 gap-3.5 p-4 overflow-hidden">
+      {/* Main 2-Column Full-Page Grid */}
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 p-5 max-w-[1600px] w-full mx-auto">
         {/* Left Column (5 Cols) — Voice Intercept & Verification Stack */}
-        <section className="lg:col-span-5 min-h-0 flex flex-col gap-3.5 h-full overflow-hidden">
+        <section className="lg:col-span-5 flex flex-col gap-5">
           {/* Waveform & Streaming Transcript */}
           <AudioVisualizer
             isIntercepting={isIntercepting}
@@ -51,8 +51,8 @@ export default function WarRoomHUD() {
             partialTranscript={partialTranscript}
           />
 
-          {/* Bluff Receipt Stack (Scrollable) */}
-          <div className="flex-1 min-h-0 bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex flex-col gap-2.5 overflow-hidden">
+          {/* Bluff Receipt Stack (Natural Full-Height Flow) */}
+          <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-4 flex flex-col gap-3">
             <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-white/50" />
@@ -65,9 +65,9 @@ export default function WarRoomHUD() {
               </span>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2.5 pr-2 overscroll-contain">
+            <div className="flex flex-col gap-3">
               {bluffReceipts.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-6 text-white/40 text-xs">
+                <div className="flex flex-col items-center justify-center text-center p-8 text-white/40 text-xs">
                   <span className="text-white/60">No discrepancies detected yet</span>
                   <span className="text-[11px] text-white/30 mt-1 font-mono">
                     Browser swarm will speculatively inspect claims mid-speech.
@@ -90,7 +90,7 @@ export default function WarRoomHUD() {
         </section>
 
         {/* Right Column (7 Cols) — 3-Pane Swarm Viewports */}
-        <section className="lg:col-span-7 min-h-0 h-full overflow-hidden">
+        <section className="lg:col-span-7 flex flex-col gap-5">
           <BrowserViewport swarmLanes={swarmLanes} />
         </section>
       </main>
