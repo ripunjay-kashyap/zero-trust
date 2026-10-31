@@ -22,21 +22,13 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
     }
   }, []);
 
-  // When a valid live stream arrives, default to stream view unless it failed
+  // Live stream detection
   const hasLiveStream = Boolean(
     swarmLanes.lane3.streamUrl &&
       (swarmLanes.lane3.streamUrl.includes("tinyfish.io") ||
         (swarmLanes.lane3.streamUrl.startsWith("http") &&
           !swarmLanes.lane3.streamUrl.includes("/mock/watchlist/")))
   );
-
-  useEffect(() => {
-    if (hasLiveStream && !streamFailed) {
-      setViewMode("stream");
-    } else {
-      setViewMode("mirror");
-    }
-  }, [hasLiveStream, streamFailed]);
 
   const fmcsaUrl = `http://${host}:8000/mock/fmcsa/884921`;
   const watchlistMirrorUrl = `http://${host}:8000/mock/watchlist/884921`;
