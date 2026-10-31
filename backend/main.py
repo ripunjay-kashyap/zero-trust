@@ -154,6 +154,16 @@ async def health_check():
     }
 
 
+@app.get("/api/test-currency-claim")
+async def api_test_currency_claim(claimed_inr: float = 200.0):
+    """
+    Live test endpoint to verify arbitrary claims against live web data using TinyFetch.
+    Example: claimed_inr=200 against live Google Finance market truth (~94.91 INR).
+    """
+    from backend.test_claim_fetch import verify_currency_claim
+    return await verify_currency_claim(claimed_inr)
+
+
 # -----------------------------------------------------------------------------
 # Pre-warm & Counter Synthesis REST API
 # -----------------------------------------------------------------------------
