@@ -1,0 +1,18 @@
+[project]
+name = "zerotrust"
+version = "0.1.0"
+description = "ZeroTrust Wire - Real-Time Carrier Bluff Intercept and Verification Swarm"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "httpx[http2]>=0.28.0",
+    "python-dotenv>=1.0.1",
+    "websockets>=13.1",
+    "pydantic>=2.10.0",
+    "jinja2>=3.1.4",
+    "playwright>=1.49.0",
+    "modal>=1.6.3",
+    "google-genai>=1.0.0",
+]

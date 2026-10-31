@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FMCSA SAFER - BLUE STAR FREIGHT LLC (MC-884921)</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background-color: #f4f6f9;
+      color: #1a1a1a;
+      font-size: 13px;
+    }
+    .header-banner {
+      background-color: #002d62;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-banner h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .header-banner .sub {
+      font-size: 11px;
+      opacity: 0.85;
+    }
+    .official-seal {
+      font-weight: bold;
+      font-size: 12px;
+      background: #001a3a;
+      padding: 4px 8px;
+      border-radius: 3px;
+      border: 1px solid #1a4d8c;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #d9e1e8;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #e8eef5;
+      color: #002d62;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .section-title {
+      background-color: #1a4d8c !important;
+      color: #ffffff !important;
+      font-size: 13px !important;
+      font-weight: bold;
+      padding: 10px 12px;
+    }
+    .label-col {
+      width: 25%;
+      font-weight: bold;
+      background-color: #f8fafc;
+      color: #334155;
+    }
+    .val-col {
+      width: 25%;
+      color: #0f172a;
+    }
+    .status-active {
+      display: inline-block;
+      background-color: #10b981;
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-weight: bold;
+      font-size: 11px;
+    }
+    /* Highlight Target Table */
+    #safety-inspection-table th {
+      text-align: center;
+    }
+    #safety-inspection-table td {
+      text-align: center;
+    }
+    #safety-inspection-table td.metric-label {
+      text-align: left;
+      font-weight: 600;
+    }
+    .warning-cell {
+      background-color: #fee2e2;
+      color: #991b1b;
+      font-weight: bold;
+    }
+    .fmcsa-footer {
+      font-size: 11px;
+      color: #64748b;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 12px;
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-banner">
+    <div>
+      <h1>FEDERAL MOTOR CARRIER SAFETY ADMINISTRATION</h1>
+      <div class="sub">U.S. DEPARTMENT OF TRANSPORTATION — SAFETY AND FITNESS ELECTRONIC RECORDS (SAFER)</div>
+    </div>
+    <div class="official-seal">OFFICIAL CARRIER SNAPSHOT</div>
+  </div>
+
+  <!-- Carrier Identification Table -->
+  <table id="carrier-id-table">
+    <tr>
+      <th colspan="4" class="section-title">Carrier Identification Data</th>
+    </tr>
+    <tr>
+      <td class="label-col">Entity Type:</td>
+      <td class="val-col" id="fmcsa-entity-type">CARRIER</td>
+      <td class="label-col">Operating Status:</td>
+      <td class="val-col"><span class="status-active" id="fmcsa-op-status">AUTHORIZED FOR Property</span></td>
+    </tr>
+    <tr>
+      <td class="label-col">Legal Name:</td>
+      <td class="val-col" id="fmcsa-legal-name">BLUE STAR FREIGHT LLC</td>
+      <td class="label-col">DBA Name:</td>
+      <td class="val-col" id="fmcsa-dba-name">—</td>
+    </tr>
+    <tr>
+      <td class="label-col">USDOT Number:</td>
+      <td class="val-col" id="fmcsa-dot">2519409</td>
+      <td class="label-col">MC/FF Number(s):</td>
+      <td class="val-col" id="fmcsa-mc">MC-884921</td>
+    </tr>
+    <tr>
+      <td class="label-col">Physical Address:</td>
+      <td class="val-col" colspan="3" id="fmcsa-address">9800 RICHMOND AVE SUITE 400, HOUSTON, TX 77042</td>
+    </tr>
+    <tr>
+      <td class="label-col">Mailing Address:</td>
+      <td class="val-col" colspan="3">9800 RICHMOND AVE SUITE 400, HOUSTON, TX 77042</td>
+    </tr>
+    <tr id="fleet-power-units-row">
+      <td class="label-col">Power Units (Trucks):</td>
+      <td class="val-col" id="power-units" style="font-size: 15px; font-weight: bold; color: #b91c1c;">3</td>
+      <td class="label-col">Drivers:</td>
+      <td class="val-col" id="drivers-count">3</td>
+    </tr>
+    <tr>
+      <td class="label-col">MCS-150 Form Date:</td>
+      <td class="val-col">10/12/2026</td>
+      <td class="label-col">MCS-150 Mileage (Year):</td>
+      <td class="val-col">184,200 (2025)</td>
+    </tr>
+  </table>
+
+  <!-- Safety & Out of Service Inspection Table -->
+  <table id="safety-inspection-table">
+    <tr>
+      <th colspan="4" class="section-title">Safety Rating & Inspection Summary (24 Months)</th>
+    </tr>
+    <tr>
+      <th style="width: 35%;">Inspection Category</th>
+      <th style="width: 20%;">Vehicle</th>
+      <th style="width: 25%;">Driver</th>
+      <th style="width: 20%;">Hazmat</th>
+    </tr>
+    <tr>
+      <td class="metric-label">Total Inspections</td>
+      <td id="vehicle-inspections">13</td>
+      <td id="driver-inspections">13</td>
+      <td id="hazmat-inspections">0</td>
+    </tr>
+    <tr>
+      <td class="metric-label">Out of Service (OOS) Violations</td>
+      <td id="vehicle-oos-violations" class="warning-cell">5</td>
+      <td id="driver-oos-violations">1</td>
+      <td id="hazmat-oos-violations">0</td>
+    </tr>
+    <tr id="oos-rate-highlight-row">
+      <td class="metric-label">Out of Service %</td>
+      <td id="vehicle-oos" class="warning-cell" style="font-size: 15px;">38.5%</td>
+      <td id="driver-oos">7.7%</td>
+      <td id="hazmat-oos">0.0%</td>
+    </tr>
+    <tr>
+      <td class="metric-label">National Average % (2025-2026)</td>
+      <td id="natl-vehicle-oos">21.0%</td>
+      <td id="natl-driver-oos">5.5%</td>
+      <td id="natl-hazmat-oos">4.5%</td>
+    </tr>
+  </table>
+
+  <div class="fmcsa-footer">
+    <div>Query Timestamp: 2026-10-31 06:40:00 UTC | Database Mirror: Active Verified</div>
+    <div>SAFER System v4.12 — FMCSA Data Source: MCMIS</div>
+  </div>
+
+</body>
+</html>

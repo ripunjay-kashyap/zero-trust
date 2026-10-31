@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CarrierWatch Intelligence - Risk Report MC-884921</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #0f172a;
+      color: #f1f5f9;
+      font-size: 13px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 20px;
+    }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-badge {
+      background: #dc2626;
+      color: #fff;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+      font-size: 12px;
+    }
+    .title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+    .card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+    .alert-banner {
+      background: rgba(220, 38, 38, 0.15);
+      border: 1px solid #dc2626;
+      color: #fca5a5;
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .alert-banner .headline {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .risk-pill {
+      background-color: #dc2626;
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .field-label {
+      color: #94a3b8;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .field-value {
+      font-size: 14px;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .warning-text {
+      color: #f87171;
+    }
+    .violation-list {
+      margin: 12px 0 0 0;
+      padding-left: 20px;
+      color: #fca5a5;
+    }
+    .violation-list li {
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .metadata-row {
+      display: flex;
+      justify-content: space-between;
+      color: #64748b;
+      font-size: 11px;
+      margin-top: 24px;
+      border-top: 1px solid #1e293b;
+      padding-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo-area">
+      <span class="logo-badge">WATCHLIST</span>
+      <span class="title">Freight Fraud Intelligence Registry</span>
+    </div>
+    <div id="live-indicator" style="color: #10b981; font-weight: 600; font-size: 11px;">● LIVE REGISTRY SYNCED</div>
+  </div>
+
+  <div class="alert-banner" id="watchlist-alert">
+    <div>
+      <div class="headline">CRITICAL RISK: KNOWN VIRTUAL SUITE / CHAMELEON IDENTITY</div>
+      <div style="margin-top: 4px; font-size: 12px; color: #cbd5e1;">Carrier address matches a high-frequency virtual shared office associated with double-brokering activities.</div>
+    </div>
+    <span class="risk-pill" id="risk-badge">HIGH RISK</span>
+  </div>
+
+  <div class="card" id="carrier-profile-card">
+    <div class="grid-2">
+      <div>
+        <div class="field-label">Target Carrier</div>
+        <div class="field-value" id="carrier-name">BLUE STAR FREIGHT LLC</div>
+      </div>
+      <div>
+        <div class="field-label">Authority Numbers</div>
+        <div class="field-value" id="carrier-mc-dot">MC-884921 / USDOT 2519409</div>
+      </div>
+    </div>
+    <div style="margin-top: 14px;">
+      <div class="field-label">Physical Registered Address</div>
+      <div class="field-value warning-text" id="registered-address">9800 Richmond Ave Suite 400, Houston, TX 77042</div>
+    </div>
+    <div style="margin-top: 14px;">
+      <div class="field-label">Address Classification</div>
+      <div class="field-value warning-text" id="address-type">Virtual Office / Shared Workspace (Regus Business Center)</div>
+    </div>
+  </div>
+
+  <div class="card" id="flags-card">
+    <div class="field-label" style="color: #ef4444; font-weight: 700;">Active Fraud & Chameleon Risk Indicators</div>
+    <ul class="violation-list" id="violation-items">
+      <li id="flag-chameleon">Chameleon Carrier: Officer identity linked to revoked authority MC-714022 (Austin, TX)</li>
+      <li id="flag-virtual">Virtual Office: Commercial address shared with 218 active corporations; no verified tractor parking or yard</li>
+      <li id="flag-double-broker">Double-Broker Velocity Flag: Carrier posted 4 outbound loads before safety verification completed</li>
+    </ul>
+  </div>
+
+  <div class="metadata-row">
+    <div id="report-id">Audit Ref: CW-2026-884921-X9</div>
+    <div id="timestamp">Verified: 2026-10-31 06:40:00 UTC</div>
+  </div>
+
+</body>
+</html>
