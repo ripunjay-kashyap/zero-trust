@@ -101,8 +101,8 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
           {getStatusBadge(swarmLanes.lane2.status)}
         </div>
 
-        {/* Embedded Live Snapshot or Mirror */}
-        <div className="flex-1 rounded-xl border border-white/10 overflow-hidden bg-black/60 relative flex items-center justify-center">
+        {/* Embedded Live Snapshot or Standby Placeholder */}
+        <div className="flex-1 rounded-xl border border-white/10 overflow-hidden bg-black/60 relative flex items-center justify-center p-6 text-center">
           {swarmLanes.lane2.snapshotUrl ? (
             <img
               src={swarmLanes.lane2.snapshotUrl}
@@ -110,12 +110,19 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
               className="w-full h-full object-cover object-top select-none"
             />
           ) : (
-            <iframe
-              src={fmcsaUrl}
-              title="Official Record Mirror"
-              className="w-full h-full border-0 select-none pointer-events-auto"
-              loading="eager"
-            />
+            <div className="flex flex-col items-center justify-center gap-3 max-w-sm text-center">
+              <div className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-white/40">
+                <Search className={`w-5 h-5 ${swarmLanes.lane2.status === "HUNTING" ? "text-amber-400 animate-spin" : "text-white/40"}`} />
+              </div>
+              <div className="text-sm font-semibold text-white/80">
+                {swarmLanes.lane2.status === "HUNTING" ? "Fetching Live Web Proof..." : "Awaiting Live Verification"}
+              </div>
+              <div className="text-xs text-white/50 leading-relaxed font-sans">
+                {swarmLanes.lane2.status === "HUNTING" 
+                  ? "TinyFish and Playwright are capturing and highlighting the verified source..."
+                  : "Live official registry records, highlighted source proofs, and verified web snapshots will appear here dynamically."}
+              </div>
+            </div>
           )}
         </div>
       </div>

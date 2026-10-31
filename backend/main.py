@@ -618,6 +618,16 @@ async def execute_live_swarm_and_counter(websocket: WebSocket, session_state: Di
                 "timestamp": time.time(),
             })
 
+        # Send Lane 2 Update with the real Playwright DOM snapshot
+        if swarm_bundle.get("lane2", {}).get("screenshot_base64"):
+            await websocket.send_json({
+                "type": "SWARM_LANE_UPDATE",
+                "lane": 2,
+                "status": "VERIFIED",
+                "title": f"Lane 2 · FMCSA SAFER Snapshot (MC-{session_state['mc_number']})",
+                "snapshot_url": swarm_bundle["lane2"]["screenshot_base64"],
+            })
+
         # Synthesize counter speech via Modal GPU
         counter_b64, audio_source, synth_latency_ms = await synthesize_counter_speech(
             compilation["counter_script"]
@@ -852,6 +862,16 @@ async def run_injected_audio_wiretap(websocket: WebSocket, session_state: Dict[s
                 "type": "BLUFF_RECEIPT_READY",
                 "receipt": receipt,
                 "timestamp": time.time(),
+            })
+
+        # Send Lane 2 Update with the real Playwright DOM snapshot
+        if swarm_bundle.get("lane2", {}).get("screenshot_base64"):
+            await websocket.send_json({
+                "type": "SWARM_LANE_UPDATE",
+                "lane": 2,
+                "status": "VERIFIED",
+                "title": f"Lane 2 · FMCSA SAFER Snapshot (MC-{session_state['mc_number']})",
+                "snapshot_url": swarm_bundle["lane2"]["screenshot_base64"],
             })
 
         # Synthesize counter audio via Modal GPU Kokoro (with 1.0s fallback to local asset)

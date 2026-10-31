@@ -48,7 +48,13 @@ export function useWiretapSocket() {
       claimedValue?: string;
       markup?: string;
     };
-    lane2: { status: "STANDBY" | "HUNTING" | "VERIFIED"; summary?: string };
+    lane2: {
+      status: "STANDBY" | "HUNTING" | "VERIFIED";
+      summary?: string;
+      title?: string;
+      snapshotUrl?: string;
+      targetUrl?: string;
+    };
     lane3: { status: "STANDBY" | "HUNTING" | "VERIFIED"; streamUrl?: string };
   }>({
     lane1: { status: "STANDBY" },
@@ -183,19 +189,33 @@ export function useWiretapSocket() {
         break;
 
       case "SWARM_LANE_UPDATE":
-        setSwarmLanes((prev) => ({
-          ...prev,
-          lane1: {
-            ...prev.lane1,
-            status: msg.status || "VERIFIED",
-            title: msg.title,
-            spotLabel: msg.spot_label,
-            spotValue: msg.spot_value,
-            claimedLabel: msg.claimed_label,
-            claimedValue: msg.claimed_value,
-            markup: msg.markup_badge,
-          },
-        }));
+        setSwarmLanes((prev) => {
+          if (msg.lane === 2) {
+            return {
+              ...prev,
+              lane2: {
+                ...prev.lane2,
+                status: msg.status || "VERIFIED",
+                title: msg.title || prev.lane2.title,
+                snapshotUrl: msg.snapshot_url || prev.lane2.snapshotUrl,
+                targetUrl: msg.target_url || prev.lane2.targetUrl,
+              },
+            };
+          }
+          return {
+            ...prev,
+            lane1: {
+              ...prev.lane1,
+              status: msg.status || "VERIFIED",
+              title: msg.title,
+              spotLabel: msg.spot_label,
+              spotValue: msg.spot_value,
+              claimedLabel: msg.claimed_label,
+              claimedValue: msg.claimed_value,
+              markup: msg.markup_badge,
+            },
+          };
+        });
         break;
 
       case "COUNTER_AUDIO_READY":
