@@ -52,6 +52,9 @@ IMPLEMENTATION_PLAN*.md
 # Runtime generated screenshots
 backend/mock_portals/*.png
 backend/evidence/*.png
+
+# Local copy helper
+vercel.txt
 *.pdf
 devnotes/
 *devnotes*
