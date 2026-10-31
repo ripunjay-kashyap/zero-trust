@@ -79,7 +79,8 @@ export function useWiretapSocket() {
     function connect() {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const host = window.location.hostname || "localhost";
-      const wsUrl = `${protocol}//${host}:8000/ws/wiretap`;
+      const envWsUrl = process.env.NEXT_PUBLIC_WS_URL;
+      const wsUrl = envWsUrl || `${protocol}//${host}:8000/ws/wiretap`;
 
       ws = new WebSocket(wsUrl);
       socketRef.current = ws;
@@ -175,10 +176,24 @@ export function useWiretapSocket() {
         break;
 
       case "BLUFF_RECEIPT_READY":
+        const raw = msg.receipt || {};
+        const normalizedReceipt: BluffReceipt = {
+          id: raw.id || `receipt_${Date.now()}`,
+          category: raw.category || "DISCREPANCY",
+          severity: raw.severity || "HIGH",
+          title: raw.title || "Fact-Check Receipt",
+          claimed_label: raw.claimed_label || "WHAT WAS STATED",
+          claimed_value: String(raw.claimed_value || raw.claimed || ""),
+          actual_label: raw.actual_label || raw.truth_label || "VERIFIED TRUTH",
+          actual_value: String(raw.actual_value || raw.truth || ""),
+          discrepancy: String(raw.discrepancy || raw.variance || "Contradiction Detected"),
+          screenshot: raw.screenshot || null,
+          badge_color: raw.badge_color || "red",
+        };
         setBluffReceipts((prev) => {
-          const exists = prev.some((r) => r.id === msg.receipt.id);
+          const exists = prev.some((r) => r.id === normalizedReceipt.id);
           if (exists) return prev;
-          return [...prev, msg.receipt];
+          return [...prev, normalizedReceipt];
         });
         // Transition lane to VERIFIED
         setSwarmLanes((prev) => ({
@@ -361,8 +376,10 @@ export function useWiretapSocket() {
       });
     } else {
       // Fallback direct URL playback
+      const envBackend = process.env.NEXT_PUBLIC_BACKEND_URL;
       const host = typeof window !== "undefined" ? window.location.hostname || "localhost" : "localhost";
-      const audio = new Audio(`http://${host}:8000/api/audio/counter.wav?t=${Date.now()}`);
+      const backendUrl = envBackend || `http://${host}:8000`;
+      const audio = new Audio(`${backendUrl}/api/audio/counter.wav?t=${Date.now()}`);
       counterAudioRef.current = audio;
       setIsCounterSpeaking(true);
       audio.onended = () => {

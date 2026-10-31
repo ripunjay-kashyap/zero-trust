@@ -48,6 +48,10 @@ GEMINI.md
 AGENTS.md
 IMPLEMENTATION_PLAN.md
 IMPLEMENTATION_PLAN*.md
+
+# Runtime generated screenshots
+backend/mock_portals/*.png
+backend/evidence/*.png
 *.pdf
 devnotes/
 *devnotes*
