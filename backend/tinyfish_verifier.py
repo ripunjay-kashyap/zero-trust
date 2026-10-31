@@ -123,7 +123,13 @@ class DynamicJudgeVerifier:
             await self.init_browser()
             page = await self._browser.new_page(viewport={"width": 1200, "height": 900})
             await page.goto(top_url, wait_until="domcontentloaded", timeout=12000)
-            await page.screenshot(path=str(LATEST_LANE2_PNG))
+            img_bytes = await page.screenshot()
+            dom_crop_b64 = f"data:image/png;base64,{base64.b64encode(img_bytes).decode('utf-8')}"
+            try:
+                with open(LATEST_LANE2_PNG, "wb") as f:
+                    f.write(img_bytes)
+            except Exception:
+                pass
             await page.close()
         except Exception as e:
             print(f"[DynamicJudgeVerifier] Playwright screenshot error: {e}")
@@ -149,6 +155,7 @@ class DynamicJudgeVerifier:
             "action": "Reject Claim",
             "target_url": top_url,
             "site_name": top_site,
+            "screenshot": dom_crop_b64 if dom_crop_b64 else None,
         }
 
         return {
@@ -162,6 +169,7 @@ class DynamicJudgeVerifier:
             "total_latency_ms": round(total_latency_ms, 1),
             "receipt": receipt,
             "counter_strike_script": counter_script,
+            "screenshot_base64": dom_crop_b64,
         }
 
 

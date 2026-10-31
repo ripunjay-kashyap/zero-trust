@@ -551,13 +551,13 @@ async def execute_live_swarm_and_counter(websocket: WebSocket, session_state: Di
             })
 
             # Update Lane 2 Viewport with Playwright Snapshot of Live Website
-            lane2_img_url = f"http://localhost:8000/api/evidence/lane2.png?t={int(time.time()*1000)}"
+            lane2_img = judge_res.get("screenshot_base64") or f"http://localhost:8000/api/evidence/lane2.png?t={int(time.time()*1000)}"
             await websocket.send_json({
                 "type": "SWARM_LANE_UPDATE",
                 "lane": 2,
                 "status": "VERIFIED",
                 "title": f"Lane 2 · Live Web Ground Truth ({judge_res['top_site']})",
-                "snapshot_url": lane2_img_url,
+                "snapshot_url": lane2_img,
                 "target_url": judge_res["top_url"],
             })
 
@@ -689,13 +689,13 @@ async def run_judge_statement_wiretap(websocket: WebSocket, session_state: Dict[
     })
 
     # Deliver Lane 2 update with real snapshot
-    lane2_img_url = f"http://localhost:8000/api/evidence/lane2.png?t={int(time.time()*1000)}"
+    lane2_img = judge_res.get("screenshot_base64") or f"http://localhost:8000/api/evidence/lane2.png?t={int(time.time()*1000)}"
     await websocket.send_json({
         "type": "SWARM_LANE_UPDATE",
         "lane": 2,
         "status": "VERIFIED",
         "title": f"Lane 2 · Live Web Ground Truth ({judge_res['top_site']})",
-        "snapshot_url": lane2_img_url,
+        "snapshot_url": lane2_img,
         "target_url": judge_res["top_url"],
     })
 
