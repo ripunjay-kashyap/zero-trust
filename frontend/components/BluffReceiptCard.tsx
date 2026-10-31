@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ExternalLink } from "lucide-react";
 import { BluffReceipt } from "../hooks/useWiretapSocket";
 
 interface BluffReceiptCardProps {
@@ -14,32 +14,32 @@ export const BluffReceiptCard: React.FC<BluffReceiptCardProps> = ({ receipt }) =
       {/* Header & Verification Badge */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <AlertCircle className="w-3.5 h-3.5 text-white/70" />
+          <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
           <span className="text-xs font-medium text-white tracking-tight">
             {receipt.title}
           </span>
         </div>
 
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/15 bg-white/[0.04] text-white/80">
-          Discrepancy
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-400 font-medium">
+          False Claim
         </span>
       </div>
 
-      {/* Claimed vs Truth Comparison */}
+      {/* Claimed vs Real Truth Comparison */}
       <div className="grid grid-cols-2 gap-2 bg-black/60 rounded-lg p-2.5 border border-white/[0.04] text-xs font-mono">
         <div>
           <div className="text-[10px] text-white/40 uppercase tracking-wider">
-            {receipt.claimed_label}
+            {receipt.claimed_label || "WHAT WAS STATED"}
           </div>
-          <div className="text-white/60 font-medium text-xs mt-0.5 line-through tabular-nums">
+          <div className="text-white/60 font-medium text-xs mt-0.5 line-through tabular-nums break-words">
             {receipt.claimed_value}
           </div>
         </div>
         <div>
-          <div className="text-[10px] text-white/40 uppercase tracking-wider">
-            {receipt.actual_label}
+          <div className="text-[10px] text-emerald-400/80 uppercase tracking-wider">
+            {receipt.actual_label || "VERIFIED TRUTH"}
           </div>
-          <div className="text-white font-medium text-xs mt-0.5 tabular-nums">
+          <div className="text-white font-medium text-xs mt-0.5 tabular-nums break-words">
             {receipt.actual_value}
           </div>
         </div>
@@ -47,7 +47,7 @@ export const BluffReceiptCard: React.FC<BluffReceiptCardProps> = ({ receipt }) =
 
       {/* Discrepancy Summary */}
       <div className="flex items-center justify-between text-xs font-mono px-0.5">
-        <span className="text-white/40">Variance</span>
+        <span className="text-white/40">Difference</span>
         <span className="text-white font-medium tabular-nums">
           {receipt.discrepancy}
         </span>
@@ -57,13 +57,15 @@ export const BluffReceiptCard: React.FC<BluffReceiptCardProps> = ({ receipt }) =
       {receipt.screenshot && (
         <div className="pt-2 border-t border-white/[0.06] flex flex-col gap-1.5">
           <div className="flex items-center justify-between text-[10px] font-mono text-white/40">
-            <span>FMCSA SAFER Snapshot</span>
-            <span className="text-white/60">DOM Crop</span>
+            <span>Official Source Evidence</span>
+            <span className="text-emerald-400 flex items-center gap-1">
+              Visual Proof
+            </span>
           </div>
           <div className="rounded-lg overflow-hidden border border-white/10 bg-white">
             <img
               src={receipt.screenshot}
-              alt="Registry Evidence"
+              alt="Source Evidence"
               className="w-full object-contain max-h-28 block"
             />
           </div>
