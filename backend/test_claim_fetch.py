@@ -63,6 +63,8 @@ async def verify_currency_claim(claimed_inr: float = 200.0) -> dict:
     result = {
         "claim": f"1 USD = {claimed_inr:.2f} INR",
         "live_market_truth": f"1 USD = {actual_inr:.4f} INR",
+        "actual_inr": actual_inr,
+        "delta": delta,
         "source": "Google Finance Live (via TinyFetch)",
         "fetch_latency_ms": round(fetch_latency_ms, 1),
         "discrepancy": f"+{delta:.2f} INR ({inflation_pct:+.1f}% markup)",

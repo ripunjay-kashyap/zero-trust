@@ -60,8 +60,8 @@ export default function WarRoomHUD() {
                   Verification Receipts ({bluffReceipts.length})
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-white/40">
-                0.01ms Comparator
+              <span className="text-[10px] font-mono text-white/40 whitespace-nowrap">
+                0.01ms Diff Engine
               </span>
             </div>
 

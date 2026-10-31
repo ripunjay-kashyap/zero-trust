@@ -38,7 +38,16 @@ export function useWiretapSocket() {
   const [partialTranscript, setPartialTranscript] = useState("");
   
   const [swarmLanes, setSwarmLanes] = useState<{
-    lane1: { status: "STANDBY" | "HUNTING" | "VERIFIED"; delta?: string };
+    lane1: {
+      status: "STANDBY" | "HUNTING" | "VERIFIED";
+      delta?: string;
+      title?: string;
+      spotLabel?: string;
+      spotValue?: string;
+      claimedLabel?: string;
+      claimedValue?: string;
+      markup?: string;
+    };
     lane2: { status: "STANDBY" | "HUNTING" | "VERIFIED"; summary?: string };
     lane3: { status: "STANDBY" | "HUNTING" | "VERIFIED"; streamUrl?: string };
   }>({
@@ -173,6 +182,22 @@ export function useWiretapSocket() {
         }));
         break;
 
+      case "SWARM_LANE_UPDATE":
+        setSwarmLanes((prev) => ({
+          ...prev,
+          lane1: {
+            ...prev.lane1,
+            status: msg.status || "VERIFIED",
+            title: msg.title,
+            spotLabel: msg.spot_label,
+            spotValue: msg.spot_value,
+            claimedLabel: msg.claimed_label,
+            claimedValue: msg.claimed_value,
+            markup: msg.markup_badge,
+          },
+        }));
+        break;
+
       case "COUNTER_AUDIO_READY":
         setCounterStrike({
           script: msg.script,
@@ -250,7 +275,8 @@ export function useWiretapSocket() {
                     /truck/i.test(w) ||
                     /diesel/i.test(w) ||
                     /spotless/i.test(w) ||
-                    /brazil/i.test(w);
+                    /brazil/i.test(w) ||
+                    /usd|inr|rupee|dollar|currency|\b\d+\b/i.test(w);
                   return { word: w, entities: isEntity ? [w] : [] };
                 })
               );

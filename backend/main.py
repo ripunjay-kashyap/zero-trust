@@ -66,6 +66,7 @@ AUDIO_DIR = BASE_DIR / "backend" / "audio"
 MOCK_DIR = BASE_DIR / "backend" / "mock_portals"
 INJECTOR_WAV_FILE = AUDIO_DIR / "carrier_call_409.wav"
 COUNTER_WAV_FILE = AUDIO_DIR / "counter_strike_default.wav"
+LATEST_COUNTER_WAV_FILE = AUDIO_DIR / "latest_counter.wav"
 MOCK_FMCSA_FILE = MOCK_DIR / "fmcsa_snapshot.html"
 MOCK_WATCHLIST_FILE = MOCK_DIR / "watchlist.html"
 
@@ -130,6 +131,8 @@ async def mock_watchlist(mc_number: str):
 @app.get("/api/audio/counter.wav")
 async def get_counter_audio():
     """Serves latest counter strike WAV audio directly."""
+    if LATEST_COUNTER_WAV_FILE.exists():
+        return FileResponse(LATEST_COUNTER_WAV_FILE, media_type="audio/wav")
     if COUNTER_WAV_FILE.exists():
         return FileResponse(COUNTER_WAV_FILE, media_type="audio/wav")
     return HTMLResponse("Audio not found", status_code=404)
@@ -208,6 +211,12 @@ async def synthesize_counter_speech(
                     payload = resp.json()
                     b64_audio = payload.get("audio_base64", "")
                     if b64_audio:
+                        raw_b64 = b64_audio.split(",", 1)[-1] if "," in b64_audio else b64_audio
+                        try:
+                            with open(LATEST_COUNTER_WAV_FILE, "wb") as f:
+                                f.write(base64.b64decode(raw_b64))
+                        except Exception as e:
+                            print(f"[Synthesizer] Failed to write latest counter wav: {e}")
                         if not b64_audio.startswith("data:"):
                             b64_audio = f"data:audio/wav;base64,{b64_audio}"
                         latency_ms = (time.time() - t0) * 1000
@@ -291,6 +300,8 @@ async def websocket_wiretap(websocket: WebSocket):
                 session_state["lane2_dispatched"] = False
                 session_state["lane3_dispatched"] = False
                 session_state["spoken_text"] = ""
+                session_state["is_currency_claim"] = False
+                session_state["claimed_inr"] = None
 
                 # Reset HUD Panels
                 await websocket.send_json({
@@ -300,6 +311,11 @@ async def websocket_wiretap(websocket: WebSocket):
                 })
 
                 if mode == "inject":
+                    if LATEST_COUNTER_WAV_FILE.exists():
+                        try:
+                            LATEST_COUNTER_WAV_FILE.unlink()
+                        except Exception:
+                            pass
                     # Run deterministic stage injector in background task
                     asyncio.create_task(run_injected_audio_wiretap(websocket, session_state))
 
@@ -321,17 +337,35 @@ async def websocket_wiretap(websocket: WebSocket):
                 text = data.get("text", "")
                 session_state["spoken_text"] = text
 
-                # Fuel claim detection (e.g. "4.15" or "$4.15" or "diesel")
-                fuel_match = re.search(r"\$?(\d+\.\d{2})", text)
-                if fuel_match and not session_state["lane1_dispatched"]:
-                    session_state["claimed_fuel"] = float(fuel_match.group(1))
+                # Currency claim detection (e.g. "1 USD is equal to 500 INR", "500 inr", "200 rupees")
+                curr_match = (
+                    re.search(r"(?:usd|dollar).*?(\d+(?:\.\d+)?)\s*(?:inr|rupees?|rs)", text, re.IGNORECASE)
+                    or re.search(r"(\d+(?:\.\d+)?)\s*(?:inr|rupees?|rs)", text, re.IGNORECASE)
+                    or re.search(r"(?:1\s*usd|1\s*dollar).*?(?:is|equal to|=|to)\s*(\d+(?:\.\d+)?)", text, re.IGNORECASE)
+                )
+                if curr_match and not session_state["lane1_dispatched"]:
+                    session_state["is_currency_claim"] = True
+                    session_state["claimed_inr"] = float(curr_match.group(1))
                     session_state["lane1_dispatched"] = True
                     await websocket.send_json({
                         "type": "SWARM_DISPATCHED",
                         "lane": 1,
-                        "lane_name": "Diesel Spot Index Check",
-                        "claim": f"${session_state['claimed_fuel']} Diesel",
+                        "lane_name": "Google Finance Live Exchange Check",
+                        "claim": f"1 USD = {session_state['claimed_inr']:.2f} INR",
                     })
+
+                # Fuel claim detection (e.g. "4.15" or "$4.15" or "diesel")
+                if not session_state.get("is_currency_claim"):
+                    fuel_match = re.search(r"\$?(\d+\.\d{2})", text)
+                    if fuel_match and not session_state["lane1_dispatched"]:
+                        session_state["claimed_fuel"] = float(fuel_match.group(1))
+                        session_state["lane1_dispatched"] = True
+                        await websocket.send_json({
+                            "type": "SWARM_DISPATCHED",
+                            "lane": 1,
+                            "lane_name": "Diesel Spot Index Check",
+                            "claim": f"${session_state['claimed_fuel']} Diesel",
+                        })
 
                 # MC number claim detection (e.g. "MC 884921" or "884921")
                 mc_match = re.search(r"MC[- ]?(\d{6,7})", text, re.IGNORECASE)
@@ -373,8 +407,85 @@ async def websocket_wiretap(websocket: WebSocket):
 async def execute_live_swarm_and_counter(websocket: WebSocket, session_state: Dict[str, Any]):
     """
     Executes live verification swarm and compiles counter-offer for Mode B (Live Mic).
+    Supports freight double-brokering and live arbitrary claim verification (e.g., currency) via TinyFetch.
     """
     try:
+        spoken_text = session_state.get("spoken_text", "")
+        is_currency = session_state.get("is_currency_claim", False)
+        claimed_inr = session_state.get("claimed_inr")
+
+        # Fallback check on full spoken text if delta didn't trigger
+        if not is_currency and spoken_text:
+            curr_match = (
+                re.search(r"(?:usd|dollar).*?(\d+(?:\.\d+)?)\s*(?:inr|rupees?|rs)", spoken_text, re.IGNORECASE)
+                or re.search(r"(\d+(?:\.\d+)?)\s*(?:inr|rupees?|rs)", spoken_text, re.IGNORECASE)
+                or re.search(r"(?:1\s*usd|1\s*dollar).*?(?:is|equal to|=|to)\s*(\d+(?:\.\d+)?)", spoken_text, re.IGNORECASE)
+            )
+            if curr_match:
+                is_currency = True
+                claimed_inr = float(curr_match.group(1))
+
+        if is_currency and claimed_inr:
+            print(f"[LiveSwarm] Executing Currency Claim Verification for 1 USD = {claimed_inr} INR")
+            from backend.test_claim_fetch import verify_currency_claim
+            curr_res = await verify_currency_claim(claimed_inr)
+
+            # Send Currency Receipt Card to HUD
+            receipt = {
+                "id": "bluff_currency_exchange",
+                "lane": 1,
+                "title": "Currency Exchange Discrepancy",
+                "type": "Discrepancy",
+                "claimed": f"1 USD = {claimed_inr:.2f} INR",
+                "claimed_label": "CLAIMED CONVERSION",
+                "truth": curr_res["live_market_truth"],
+                "truth_label": "GOOGLE FINANCE (TINYFETCH)",
+                "variance": curr_res["discrepancy"],
+                "highlight": True,
+                "action": "Reject Rate",
+            }
+            await websocket.send_json({
+                "type": "BLUFF_RECEIPT_READY",
+                "receipt": receipt,
+                "timestamp": time.time(),
+            })
+
+            # Update Lane 1 status on HUD
+            await websocket.send_json({
+                "type": "SWARM_LANE_UPDATE",
+                "lane": 1,
+                "status": "VERIFIED",
+                "title": "Lane 1 · Currency Live Market Truth (TinyFetch)",
+                "spot_label": "Google Finance: ",
+                "spot_value": f"{curr_res.get('actual_inr', 84.15):.2f} INR",
+                "claimed_label": "Claimed: ",
+                "claimed_value": f"{claimed_inr:.2f} INR",
+                "markup_badge": f"+{curr_res.get('delta', 0):.2f} INR markup",
+            })
+
+            # Synthesize targeted counter speech via Kokoro GPU
+            counter_script = curr_res["counter_strike_script"]
+            counter_b64, audio_source, synth_latency_ms = await synthesize_counter_speech(
+                counter_script
+            )
+
+            # Deliver Armed Counter-Offer Audio
+            await websocket.send_json({
+                "type": "COUNTER_AUDIO_READY",
+                "script": counter_script,
+                "audio_base64": counter_b64,
+                "audio_source": audio_source,
+                "synth_latency_ms": round(synth_latency_ms, 2),
+                "savings": f"+{curr_res.get('delta', 0):.2f} INR / USD Spread",
+                "proposed_rate": f"1 USD = {curr_res.get('actual_inr', 84.15):.2f} INR",
+                "original_rate": f"1 USD = {claimed_inr:.2f} INR",
+                "compilation_ms": 0.01,
+                "total_bluffs": 1,
+            })
+
+            await websocket.send_json({"type": "AUDIO_STREAM_FINISHED"})
+            return
+
         async def on_browser_url(url: str):
             try:
                 await websocket.send_json({
