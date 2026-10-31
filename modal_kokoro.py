@@ -41,9 +41,9 @@ class KokoroVoiceService:
         self.pipeline = KPipeline(lang_code="a")
 
     @modal.method()
-    def synthesize_wav(self, text: str, voice: str = "af_heart") -> bytes:
+    def synthesize_wav(self, text: str, voice: str = "af_heart", speed: float = 0.85) -> bytes:
         import soundfile as sf
-        generator = self.pipeline(text, voice=voice, speed=1.0)
+        generator = self.pipeline(text, voice=voice, speed=speed)
         audio_chunks = []
         sample_rate = 24000
         for _, _, audio in generator:
@@ -63,14 +63,16 @@ class KokoroVoiceService:
     def synthesize_endpoint(self, payload: dict):
         text = payload.get("text", "")
         voice = payload.get("voice", "af_heart")
+        speed = float(payload.get("speed", 0.85))
         if not text:
             return {"error": "Missing text parameter"}
 
-        wav_bytes = self.synthesize_wav(text=text, voice=voice)
+        wav_bytes = self.synthesize_wav(text=text, voice=voice, speed=speed)
         b64_audio = base64.b64encode(wav_bytes).decode("utf-8")
         return {
             "status": "SUCCESS",
             "audio_base64": f"data:audio/wav;base64,{b64_audio}",
             "sample_rate": 24000,
+            "speed": speed,
             "text": text,
         }
