@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { Radio } from "lucide-react";
+import { Volume2 } from "lucide-react";
 
 interface AudioVisualizerProps {
   isIntercepting: boolean;
@@ -16,6 +16,8 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
   transcriptDeltas,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animFrameRef = useRef<number | null>(null);
 
   // Auto-scroll transcript container as words arrive
   useEffect(() => {
@@ -24,62 +26,121 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
     }
   }, [transcriptDeltas]);
 
+  // Canvas waveform rendering inspired by Cosmos voice ribbon
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let phase = 0;
+
+    const render = () => {
+      const width = canvas.width;
+      const height = canvas.height;
+      ctx.clearRect(0, 0, width, height);
+
+      const isActive = isIntercepting || isCarrierSpeaking;
+      const centerY = height / 2;
+
+      // Draw multi-layered technical particle sine ribbons
+      const layers = [
+        { amplitude: isActive ? 18 : 3, freq: 0.02, speed: 0.04, alpha: 0.9, lineWidth: 1.5 },
+        { amplitude: isActive ? 12 : 2, freq: 0.035, speed: 0.06, alpha: 0.5, lineWidth: 1.0 },
+        { amplitude: isActive ? 8 : 1.5, freq: 0.05, speed: 0.08, alpha: 0.25, lineWidth: 0.8 },
+      ];
+
+      layers.forEach((layer) => {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(255, 255, 255, ${layer.alpha})`;
+        ctx.lineWidth = layer.lineWidth;
+
+        for (let x = 0; x < width; x += 2) {
+          // Gaussian envelope to keep waveform tapered at edges
+          const envelope = Math.sin((x / width) * Math.PI);
+          const y =
+            centerY +
+            Math.sin(x * layer.freq + phase * layer.speed * 20) *
+              layer.amplitude *
+              envelope;
+
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.stroke();
+      });
+
+      // Subtle dither dots along the primary wave
+      if (isActive) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        for (let x = 20; x < width - 20; x += 18) {
+          const envelope = Math.sin((x / width) * Math.PI);
+          const y =
+            centerY +
+            Math.sin(x * 0.02 + phase * 0.8) * 18 * envelope;
+          ctx.beginPath();
+          ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      phase += 0.05;
+      animFrameRef.current = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+  }, [isIntercepting, isCarrierSpeaking]);
+
   return (
-    <div className="bg-[#11141c] rounded-xl border border-white/[0.08] p-4 flex flex-col gap-3">
+    <div className="shrink-0 bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex flex-col gap-2.5">
       {/* Header Bar */}
-      <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.08]">
+      <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
-          <Radio
-            className={`w-4 h-4 ${
-              isCarrierSpeaking ? "text-[#e5484d]" : "text-[#7a8296]"
-            }`}
-          />
-          <span className="text-xs font-medium text-[#eef0f5]">
+          <Volume2 className="w-3.5 h-3.5 text-white/50" />
+          <span className="text-xs font-medium text-white/90">
             {isCarrierSpeaking
-              ? "Carrier audio stream · Daniel (140 WPM)"
+              ? "Carrier Wiretap · Daniel"
               : isIntercepting
-              ? "Wiretap channel #409 · Active"
-              : "Wiretap channel #409 · Standby"}
+              ? "Call In Progress"
+              : "Channel Standby"}
           </span>
         </div>
-        <div className="flex items-center gap-3 text-xs font-mono text-[#a3a9b8]">
+        <div className="flex items-center gap-2 text-xs font-mono text-white/50">
           <span>Dallas → Atlanta</span>
-          <span className="text-[#e5484d] font-medium tabular-nums">$4,400 quote</span>
+          <span className="text-white font-medium">$4,400</span>
         </div>
       </div>
 
-      {/* Audio Waveform Meter */}
-      <div className="h-9 bg-[#07080d] rounded-lg border border-white/[0.08] px-3 flex items-center justify-between gap-1 overflow-hidden">
-        {Array.from({ length: 48 }).map((_, i) => {
-          let heightPct = 14;
-          if (isIntercepting || isCarrierSpeaking) {
-            const wave = Math.sin(i * 0.42) * 0.45 + 0.55;
-            heightPct = Math.round(wave * 60 + 20);
-          }
-          return (
-            <div
-              key={i}
-              className={`w-1 rounded-sm transition-all duration-100 ${
-                isCarrierSpeaking
-                  ? "bg-[#a3a9b8]"
-                  : isIntercepting
-                  ? "bg-[#7a8296]"
-                  : "bg-[#1a1e28]"
-              }`}
-              style={{ height: `${heightPct}%` }}
-            />
-          );
-        })}
+      {/* Cinematic Monochrome Waveform Canvas */}
+      <div className="h-16 w-full bg-black/60 rounded-xl border border-white/[0.04] overflow-hidden flex items-center justify-center relative">
+        <canvas
+          ref={canvasRef}
+          width={480}
+          height={64}
+          className="w-full h-full block"
+        />
+        {!isIntercepting && !isCarrierSpeaking && (
+          <span className="absolute text-[11px] font-mono text-white/30 tracking-wider">
+            STANDBY
+          </span>
+        )}
       </div>
 
       {/* Live Transcript Stream */}
       <div
         ref={containerRef}
-        className="h-28 overflow-y-auto bg-[#07080d] rounded-lg border border-white/[0.08] p-3 text-xs leading-relaxed text-[#eef0f5]"
+        className="h-28 overflow-y-auto bg-black/40 rounded-xl border border-white/[0.04] p-3 text-xs leading-relaxed text-white/80"
       >
         {transcriptDeltas.length === 0 ? (
-          <div className="h-full flex items-center text-[#7a8296] text-xs">
-            Waiting for audio stream. Click &ldquo;Intercept Call #409&rdquo; to begin.
+          <div className="h-full flex items-center justify-center text-white/30 text-xs font-mono">
+            Click &ldquo;Intercept Call #409&rdquo; to begin live wiretap.
           </div>
         ) : (
           <div className="flex flex-wrap items-baseline gap-1.5">
@@ -88,7 +149,7 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
               return (
                 <span key={idx} className="inline-block">
                   {hasEntity ? (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-mono font-medium bg-[#1a1e28] text-[#d97706] border border-[#d97706]/30">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-white/10 text-white border border-white/20">
                       {item.word}
                     </span>
                   ) : (

@@ -9,27 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0b0d14",
-        surface: {
-          deep: "#07080d",
-          page: "#0b0d14",
-          card: "#11141c",
-          raised: "#1a1e28",
-        },
-        ink: {
-          hairline: "rgba(238, 240, 245, 0.08)",
-          primary: "#eef0f5",
-          secondary: "#a3a9b8",
-          muted: "#7a8296",
-        },
-        semantic: {
-          crimson: "#e5484d",
-          pine: "#4cc38a",
-          amber: "#d97706",
-        },
+        background: "#000000",
+        surface: "#08080a",
+        "surface-raised": "#101014",
+        "surface-card": "#0c0c0e",
       },
       fontFamily: {
+        sans: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Inter", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
+      },
+      letterSpacing: {
+        tightest: "-0.04em",
+        tighter: "-0.02em",
       },
     },
   },

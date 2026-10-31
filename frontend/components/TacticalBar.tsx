@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Play, Mic, Flame } from "lucide-react";
+import { Play, Mic, Sparkles } from "lucide-react";
 
 interface TacticalBarProps {
   isConnected: boolean;
@@ -21,92 +21,83 @@ export const TacticalBar: React.FC<TacticalBarProps> = ({
   onPrewarm,
 }) => {
   return (
-    <header className="h-14 px-5 bg-[#07080d] border-b border-white/[0.08] flex items-center justify-between select-none">
-      {/* Brand & Context */}
+    <header className="h-14 px-6 bg-black border-b border-white/[0.08] flex items-center justify-between select-none">
+      {/* Brand & Status */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-md bg-[#1a1e28] border border-white/[0.08] flex items-center justify-center font-mono text-xs font-medium text-[#eef0f5]">
-            ZT
+        <div className="flex items-center gap-2.5">
+          {/* Minimalist Dither Geometric Mark */}
+          <div className="w-6 h-6 rounded-md bg-white/[0.08] border border-white/10 flex items-center justify-center">
+            <div className="w-2.5 h-2.5 rounded-sm bg-white" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium tracking-tight text-[#eef0f5]">
-                ZeroTrust
-              </span>
-              <span className="text-[11px] font-mono text-[#a3a9b8] px-1.5 py-0.5 rounded bg-[#11141c] border border-white/[0.08]">
-                Wiretap HUD
-              </span>
-            </div>
-            <p className="text-[11px] text-[#7a8296]">
-              Speculative browser swarm · Freight fraud intercept
-            </p>
-          </div>
+          <span className="text-sm font-medium tracking-tight text-white">
+            ZeroTrust
+          </span>
+          <span className="text-xs text-white/40 font-normal">
+            / wiretap
+          </span>
         </div>
 
-        {/* Status Dot */}
+        {/* Live Status Indicator */}
         <div className="hidden md:flex items-center gap-2 pl-3 border-l border-white/[0.08]">
           <span
-            className={`w-2 h-2 rounded-full ${
-              isConnected ? "bg-[#4cc38a]" : "bg-[#e5484d]"
+            className={`w-1.5 h-1.5 rounded-full ${
+              isConnected ? "bg-emerald-400" : "bg-red-400"
             }`}
           />
-          <span className="text-xs text-[#a3a9b8]">
-            {isConnected ? "Online" : "Connecting"}
+          <span className="text-xs text-white/40 font-mono">
+            {isConnected ? "ready" : "offline"}
           </span>
         </div>
       </div>
 
-      {/* Primary Actions */}
-      <div className="flex items-center gap-2.5">
-        {/* Main Action: Intercept Call #409 */}
+      {/* Central Control Actions */}
+      <div className="flex items-center gap-2">
+        {/* Primary White Button (Inspiration: Cosmos Get Started button) */}
         <button
           onClick={() => onStartWiretap("inject")}
           disabled={!isConnected || isIntercepting}
-          className={`flex items-center gap-2 h-9 px-3.5 rounded-md text-xs font-medium border transition-colors ${
+          className={`flex items-center gap-2 h-8 px-4 rounded-full text-xs font-medium transition-all ${
             isIntercepting
-              ? "bg-[#1a1e28] text-[#a3a9b8] border-white/[0.08] cursor-not-allowed"
-              : "bg-[#e5484d] hover:bg-[#d43d42] active:bg-[#c23338] text-white border-transparent cursor-pointer shadow-sm"
+              ? "bg-white/10 text-white/40 border border-white/10 cursor-not-allowed"
+              : "bg-white text-black hover:bg-neutral-200 active:scale-[0.98] cursor-pointer shadow-sm"
           }`}
         >
-          <Play className="w-3.5 h-3.5 fill-current" />
-          <span>{isIntercepting ? "Intercept in progress..." : "Intercept Call #409"}</span>
+          <Play className="w-3 h-3 fill-current" />
+          <span>{isIntercepting ? "Intercepting #409..." : "Intercept Call #409"}</span>
         </button>
 
         {/* Live Mic Action */}
         <button
           onClick={() => onStartWiretap("mic")}
           disabled={!isConnected || isIntercepting}
-          className="flex items-center gap-2 h-9 px-3 rounded-md text-xs font-medium bg-[#11141c] hover:bg-[#1a1e28] text-[#eef0f5] border border-white/[0.08] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 h-8 px-3.5 rounded-full text-xs text-white/70 hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          <Mic className="w-3.5 h-3.5 text-[#7a8296]" />
-          <span className="hidden sm:inline">Live microphone</span>
+          <Mic className="w-3 h-3 text-white/40" />
+          <span className="hidden sm:inline">Live mic</span>
         </button>
 
-        {/* Pre-Warm Action */}
+        {/* Pre-warm Action */}
         <button
           onClick={onPrewarm}
           disabled={!isConnected || isWarming}
-          className={`flex items-center gap-2 h-9 px-3 rounded-md text-xs font-medium border transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+          className={`flex items-center gap-2 h-8 px-3.5 rounded-full text-xs border transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
             isWarming
-              ? "bg-[#1a1e28] text-[#a3a9b8] border-white/[0.08]"
-              : "bg-[#11141c] hover:bg-[#1a1e28] text-[#eef0f5] border border-white/[0.08]"
+              ? "bg-white/10 text-white/50 border-white/10"
+              : "bg-white/[0.03] hover:bg-white/[0.08] text-white/70 hover:text-white border-white/10"
           }`}
         >
-          <Flame className="w-3.5 h-3.5 text-[#7a8296]" />
-          <span>{isWarming ? "Pre-warming..." : "Pre-warm swarm"}</span>
+          <Sparkles className="w-3 h-3 text-white/40" />
+          <span>{isWarming ? "Warming..." : "Pre-warm"}</span>
         </button>
       </div>
 
       {/* Telemetry Stopwatch */}
       <div className="flex items-center gap-2 text-right">
-        <div>
-          <div className="text-[11px] text-[#7a8296]">
-            Perceived latency
-          </div>
-          <div className="font-mono text-base font-medium text-[#eef0f5] tabular-nums tracking-tight">
-            {stopwatch.toFixed(2)}
-            <span className="text-xs text-[#7a8296] ml-1">s</span>
-          </div>
+        <span className="text-[11px] text-white/40 font-mono uppercase tracking-wider">
+          Latency
+        </span>
+        <div className="font-mono text-sm text-white tabular-nums tracking-tight font-medium bg-white/[0.04] px-2.5 py-1 rounded-md border border-white/10">
+          {stopwatch.toFixed(2)}s
         </div>
       </div>
     </header>
