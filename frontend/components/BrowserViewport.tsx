@@ -46,9 +46,9 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
   };
 
   return (
-    <div className="flex flex-col gap-3 h-full select-none">
+    <div className="flex flex-col gap-3 h-full min-h-0 select-none">
       {/* Lane 1: Regional Diesel Price Check via TinyFetch */}
-      <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex flex-col gap-2">
+      <div className="shrink-0 bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Globe className="w-3.5 h-3.5 text-white/50" />
@@ -75,7 +75,7 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
       </div>
 
       {/* Lane 2: FMCSA SAFER Portal Viewport */}
-      <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex-1 flex flex-col gap-2 min-h-[220px]">
+      <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex-1 min-h-0 flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Search className="w-3.5 h-3.5 text-white/50" />
@@ -98,7 +98,7 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
       </div>
 
       {/* Lane 3: Carrier Watchlist & Virtual Office Viewport */}
-      <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex-1 flex flex-col gap-2 min-h-[220px]">
+      <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-3.5 flex-1 min-h-0 flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-3.5 h-3.5 text-white/50" />

@@ -65,7 +65,7 @@ export default function WarRoomHUD() {
               </span>
             </div>
 
-            <div className="flex-1 overflow-y-auto flex flex-col gap-2.5 pr-1">
+            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2.5 pr-2 overscroll-contain">
               {bluffReceipts.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 text-white/40 text-xs">
                   <span className="text-white/60">No discrepancies detected yet</span>
