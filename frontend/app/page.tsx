@@ -44,33 +44,33 @@ export default function WarRoomHUD() {
       <main className="flex-1 flex flex-col gap-5 p-5 max-w-[1600px] w-full mx-auto">
         {/* Simple 3-Step User Flow Banner */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="bg-[#09090b] rounded-xl border border-white/[0.06] p-3 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-white/[0.06] text-white flex items-center justify-center font-mono text-xs font-semibold shrink-0">
-              <Radio className="w-4 h-4 text-white/70" />
+          <div className="bg-[#09090b] rounded-xl border border-white/[0.08] p-3.5 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-white/[0.08] text-white flex items-center justify-center font-mono text-sm font-semibold shrink-0">
+              <Radio className="w-4 h-4 text-white/80" />
             </div>
             <div>
-              <div className="text-xs font-medium text-white">1. Real-Time Intercept</div>
-              <div className="text-[11px] text-white/40">Listens to spoken claims & transcribes live</div>
+              <div className="text-sm font-semibold text-white">1. Real-Time Intercept</div>
+              <div className="text-xs text-white/60">Listens to spoken claims & transcribes live</div>
             </div>
           </div>
 
-          <div className="bg-[#09090b] rounded-xl border border-white/[0.06] p-3 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-white/[0.06] text-white flex items-center justify-center font-mono text-xs font-semibold shrink-0">
-              <Search className="w-4 h-4 text-white/70" />
+          <div className="bg-[#09090b] rounded-xl border border-white/[0.08] p-3.5 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-white/[0.08] text-white flex items-center justify-center font-mono text-sm font-semibold shrink-0">
+              <Search className="w-4 h-4 text-white/80" />
             </div>
             <div>
-              <div className="text-xs font-medium text-white">2. Live Web Verification</div>
-              <div className="text-[11px] text-white/40">TinyFish cross-checks facts across real sources</div>
+              <div className="text-sm font-semibold text-white">2. Live Web Verification</div>
+              <div className="text-xs text-white/60">TinyFish cross-checks facts across real sources</div>
             </div>
           </div>
 
-          <div className="bg-[#09090b] rounded-xl border border-white/[0.06] p-3 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-white/[0.06] text-white flex items-center justify-center font-mono text-xs font-semibold shrink-0">
-              <Volume2 className="w-4 h-4 text-white/70" />
+          <div className="bg-[#09090b] rounded-xl border border-white/[0.08] p-3.5 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-white/[0.08] text-white flex items-center justify-center font-mono text-sm font-semibold shrink-0">
+              <Volume2 className="w-4 h-4 text-white/80" />
             </div>
             <div>
-              <div className="text-xs font-medium text-white">3. Spoken Audio Rebuttal</div>
-              <div className="text-[11px] text-white/40">AI generates voice response with the true facts</div>
+              <div className="text-sm font-semibold text-white">3. Spoken Audio Rebuttal</div>
+              <div className="text-xs text-white/60">AI generates voice response with the true facts</div>
             </div>
           </div>
         </div>
@@ -90,23 +90,23 @@ export default function WarRoomHUD() {
 
             {/* Inaccuracies Detected Stack */}
             <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-4 flex flex-col gap-3">
-              <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+              <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.06]">
                 <div className="flex items-center gap-2">
-                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="text-xs font-medium text-white/90">
+                  <ShieldAlert className="w-4 h-4 text-amber-400" />
+                  <span className="text-sm font-semibold text-white">
                     Detected Inaccuracies ({bluffReceipts.length})
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-white/40 whitespace-nowrap">
+                <span className="text-xs font-mono text-white/50 whitespace-nowrap">
                   Instant Fact-Check
                 </span>
               </div>
 
               <div className="flex flex-col gap-3">
                 {bluffReceipts.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center text-center p-8 text-white/40 text-xs">
-                    <span className="text-white/60">No false claims detected yet</span>
-                    <span className="text-[11px] text-white/30 mt-1 font-mono">
+                  <div className="flex flex-col items-center justify-center text-center p-8 text-white/50 text-sm">
+                    <span className="text-white/70 font-medium">No false claims detected yet</span>
+                    <span className="text-xs text-white/40 mt-1 font-mono">
                       Play the demo call, use your mic, or click any sample fact above.
                     </span>
                   </div>

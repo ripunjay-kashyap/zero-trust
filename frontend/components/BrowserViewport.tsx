@@ -41,20 +41,20 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
   const getStatusBadge = (status: "STANDBY" | "HUNTING" | "VERIFIED") => {
     if (status === "VERIFIED") {
       return (
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 text-emerald-400 font-medium">
+        <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 text-emerald-400 font-semibold">
           Verified
         </span>
       );
     }
     if (status === "HUNTING") {
       return (
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-amber-400/30 bg-amber-400/10 text-amber-400 font-medium animate-pulse">
+        <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-amber-400/30 bg-amber-400/10 text-amber-400 font-semibold animate-pulse">
           Checking Live
         </span>
       );
     }
     return (
-      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.03] text-white/40">
+      <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-white/10 bg-white/[0.03] text-white/50">
         Standby
       </span>
     );
@@ -66,24 +66,24 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
       <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-4 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Globe className="w-3.5 h-3.5 text-white/50" />
-            <span className="text-xs font-medium text-white/90">
+            <Globe className="w-4 h-4 text-white/60" />
+            <span className="text-sm font-semibold text-white">
               {swarmLanes.lane1.title || "Source 1 · Live Market Prices (TinyFetch)"}
             </span>
           </div>
           {getStatusBadge(swarmLanes.lane1.status)}
         </div>
 
-        <div className="bg-black/60 rounded-xl border border-white/[0.04] p-3 flex items-center justify-between text-xs font-mono">
+        <div className="bg-black/60 rounded-xl border border-white/[0.04] p-3.5 flex items-center justify-between text-sm font-mono">
           <div>
-            <span className="text-white/40">{swarmLanes.lane1.spotLabel || "Real Market Price: "}</span>
-            <span className="text-white font-medium tabular-nums">{swarmLanes.lane1.spotValue || "$3.39 / gal"}</span>
+            <span className="text-white/50 text-xs uppercase tracking-wider block">Real Market Price</span>
+            <span className="text-white font-semibold text-base tabular-nums">{swarmLanes.lane1.spotValue || "$3.39 / gal"}</span>
           </div>
           <div>
-            <span className="text-white/40">{swarmLanes.lane1.claimedLabel || "Claimed: "}</span>
-            <span className="text-white/60 font-medium tabular-nums line-through">{swarmLanes.lane1.claimedValue || "$4.15 / gal"}</span>
+            <span className="text-white/50 text-xs uppercase tracking-wider block">Claimed Price</span>
+            <span className="text-white/60 font-medium text-base tabular-nums line-through">{swarmLanes.lane1.claimedValue || "$4.15 / gal"}</span>
           </div>
-          <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white font-medium border border-white/15 tabular-nums text-[11px]">
+          <span className="px-3 py-1 rounded-full bg-white/10 text-white font-semibold border border-white/20 tabular-nums text-xs">
             {swarmLanes.lane1.markup || "+$0.76/gal inflation"}
           </span>
         </div>
@@ -93,8 +93,8 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
       <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-4 flex flex-col gap-3 h-[460px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Search className="w-3.5 h-3.5 text-white/50" />
-            <span className="text-xs font-medium text-white/90">
+            <Search className="w-4 h-4 text-white/60" />
+            <span className="text-sm font-semibold text-white">
               {swarmLanes.lane2.title || "Source 2 · Official Records & Visual Web Proof"}
             </span>
           </div>
@@ -124,13 +124,13 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
       <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-4 flex flex-col gap-3 h-[420px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-3.5 h-3.5 text-white/50" />
-            <span className="text-xs font-medium text-white/90">
+            <ShieldCheck className="w-4 h-4 text-white/60" />
+            <span className="text-sm font-semibold text-white">
               Source 3 · Fraud & Entity Intelligence Stream
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-white/40 px-2 py-0.5 rounded-full border border-white/10 bg-white/[0.03]">
+            <span className="text-xs font-mono text-white/50 px-2.5 py-0.5 rounded-full border border-white/10 bg-white/[0.03]">
               Active Registry
             </span>
             {getStatusBadge(swarmLanes.lane3.status)}
