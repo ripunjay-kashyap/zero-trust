@@ -315,16 +315,122 @@ async def websocket_wiretap(websocket: WebSocket):
                 })
 
             # -------------------------------------------------------------
-            # EVENT: MIC_AUDIO_CHUNK (Mode B: Live Mic)
+            # EVENT: LIVE_SPEECH_DELTA (Mode B: Live Mic Stream)
             # -------------------------------------------------------------
-            elif event_type == "MIC_AUDIO_CHUNK":
-                # For live microphone audio streaming
-                pass
+            elif event_type == "LIVE_SPEECH_DELTA":
+                text = data.get("text", "")
+                session_state["spoken_text"] = text
+
+                # Fuel claim detection (e.g. "4.15" or "$4.15" or "diesel")
+                fuel_match = re.search(r"\$?(\d+\.\d{2})", text)
+                if fuel_match and not session_state["lane1_dispatched"]:
+                    session_state["claimed_fuel"] = float(fuel_match.group(1))
+                    session_state["lane1_dispatched"] = True
+                    await websocket.send_json({
+                        "type": "SWARM_DISPATCHED",
+                        "lane": 1,
+                        "lane_name": "Diesel Spot Index Check",
+                        "claim": f"${session_state['claimed_fuel']} Diesel",
+                    })
+
+                # MC number claim detection (e.g. "MC 884921" or "884921")
+                mc_match = re.search(r"MC[- ]?(\d{6,7})", text, re.IGNORECASE)
+                if mc_match and not session_state["lane2_dispatched"]:
+                    session_state["mc_number"] = mc_match.group(1)
+                    session_state["lane2_dispatched"] = True
+                    session_state["lane3_dispatched"] = True
+                    await websocket.send_json({
+                        "type": "SWARM_DISPATCHED",
+                        "lane": 2,
+                        "lane_name": "FMCSA SAFER Verification",
+                        "claim": f"MC-{session_state['mc_number']} Safety Check",
+                    })
+                    await websocket.send_json({
+                        "type": "SWARM_DISPATCHED",
+                        "lane": 3,
+                        "lane_name": "Carrier Watchlist Inspection",
+                        "claim": f"MC-{session_state['mc_number']} Chameleon Inspection",
+                    })
+
+                # Trucks claim detection (e.g. "15 trucks")
+                trucks_match = re.search(r"(\d+)\s+(?:inspected\s+)?trucks?", text, re.IGNORECASE)
+                if trucks_match:
+                    session_state["claimed_trucks"] = int(trucks_match.group(1))
+
+            # -------------------------------------------------------------
+            # EVENT: LIVE_SPEECH_FINISHED (Mode B End-of-Speech Trigger)
+            # -------------------------------------------------------------
+            elif event_type == "LIVE_SPEECH_FINISHED":
+                print(f"Live Speech Finished. Full Spoken Text: {session_state.get('spoken_text')}")
+                asyncio.create_task(execute_live_swarm_and_counter(websocket, session_state))
 
     except WebSocketDisconnect:
         print("HUD Disconnected from WebSocket.")
     except Exception as e:
         print(f"WebSocket Error: {e}")
+
+
+async def execute_live_swarm_and_counter(websocket: WebSocket, session_state: Dict[str, Any]):
+    """
+    Executes live verification swarm and compiles counter-offer for Mode B (Live Mic).
+    """
+    try:
+        async def on_browser_url(url: str):
+            try:
+                await websocket.send_json({
+                    "type": "BROWSER_STREAM_URL",
+                    "lane": 3,
+                    "url": url,
+                })
+            except Exception:
+                pass
+
+        # Execute Swarm concurrently
+        swarm_bundle = await swarm.run_swarm(
+            mc_number=session_state["mc_number"],
+            claimed_fuel=session_state["claimed_fuel"],
+            claimed_trucks=session_state["claimed_trucks"],
+            on_browser_url=on_browser_url,
+        )
+
+        # Compile bluffs in 0.01ms
+        spoken_claims = {
+            "claimed_fuel": session_state["claimed_fuel"],
+            "claimed_trucks": session_state["claimed_trucks"],
+            "mc_number": session_state["mc_number"],
+        }
+        compilation = BluffCompiler.compile(spoken_claims, swarm_bundle)
+
+        # Send Bluff Receipt Cards to HUD
+        for receipt in compilation["receipts"]:
+            await websocket.send_json({
+                "type": "BLUFF_RECEIPT_READY",
+                "receipt": receipt,
+                "timestamp": time.time(),
+            })
+
+        # Synthesize counter speech via Modal GPU
+        counter_b64, audio_source, synth_latency_ms = await synthesize_counter_speech(
+            compilation["counter_script"]
+        )
+
+        # Deliver Armed Counter-Offer Audio
+        await websocket.send_json({
+            "type": "COUNTER_AUDIO_READY",
+            "script": compilation["counter_script"],
+            "audio_base64": counter_b64,
+            "audio_source": audio_source,
+            "synth_latency_ms": round(synth_latency_ms, 2),
+            "savings": compilation["broker_savings"],
+            "proposed_rate": compilation["proposed_rate"],
+            "original_rate": compilation["original_rate"],
+            "compilation_ms": compilation["compilation_latency_ms"],
+            "total_bluffs": compilation["bluffs_detected_count"],
+        })
+
+        await websocket.send_json({"type": "AUDIO_STREAM_FINISHED"})
+    except Exception as e:
+        print(f"[LiveSwarm] Error during live verification: {e}")
 
 
 async def run_injected_audio_wiretap(websocket: WebSocket, session_state: Dict[str, Any]):

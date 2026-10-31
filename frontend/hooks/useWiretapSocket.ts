@@ -54,6 +54,7 @@ export function useWiretapSocket() {
   const stopwatchIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const carrierAudioRef = useRef<HTMLAudioElement | null>(null);
   const counterAudioRef = useRef<HTMLAudioElement | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   // Connect WebSocket
   useEffect(() => {
@@ -210,6 +211,86 @@ export function useWiretapSocket() {
   const startWiretap = useCallback((mode: "inject" | "mic" = "inject") => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({ type: "START_WIRETAP", mode }));
+
+      if (mode === "mic") {
+        const SpeechRec =
+          (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (SpeechRec) {
+          try {
+            const recognition = new SpeechRec();
+            recognitionRef.current = recognition;
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = "en-US";
+
+            setIsCarrierSpeaking(true);
+
+            recognition.onresult = (event: any) => {
+              let interimTranscript = "";
+              let finalTranscript = "";
+
+              for (let i = event.resultIndex; i < event.results.length; ++i) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                  finalTranscript += transcript + " ";
+                } else {
+                  interimTranscript += transcript;
+                }
+              }
+
+              const combined = (finalTranscript + interimTranscript).trim();
+              setPartialTranscript(combined);
+
+              const words = combined.split(/\s+/).filter(Boolean);
+              setTranscriptDeltas(
+                words.map((w) => {
+                  const isEntity =
+                    /\$?\d+(\.\d{2})?/.test(w) ||
+                    /MC[- ]?\d+/i.test(w) ||
+                    /truck/i.test(w) ||
+                    /diesel/i.test(w) ||
+                    /spotless/i.test(w) ||
+                    /brazil/i.test(w);
+                  return { word: w, entities: isEntity ? [w] : [] };
+                })
+              );
+
+              if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+                socketRef.current.send(
+                  JSON.stringify({
+                    type: "LIVE_SPEECH_DELTA",
+                    text: combined,
+                    latest_word: words[words.length - 1] || "",
+                  })
+                );
+              }
+            };
+
+            recognition.onerror = (event: any) => {
+              console.warn("Speech recognition error:", event.error);
+              setIsCarrierSpeaking(false);
+            };
+
+            recognition.onend = () => {
+              setIsCarrierSpeaking(false);
+              if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+                socketRef.current.send(
+                  JSON.stringify({
+                    type: "LIVE_SPEECH_FINISHED",
+                  })
+                );
+              }
+            };
+
+            recognition.start();
+          } catch (err) {
+            console.error("Failed to start SpeechRecognition:", err);
+            setIsCarrierSpeaking(false);
+          }
+        } else {
+          alert("Web Speech API is not supported in this browser. Please use Chrome, Edge, or Arc.");
+        }
+      }
     }
   }, []);
 
