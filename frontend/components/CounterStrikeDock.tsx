@@ -25,22 +25,18 @@ export const CounterStrikeDock: React.FC<CounterStrikeDockProps> = ({
             <Volume2 className="w-4 h-4 text-white/60" />
             <span>Spoken Audio Rebuttal</span>
           </div>
-          <span className="text-xs font-mono text-white/50 px-2.5 py-0.5 rounded-full border border-white/10 bg-white/[0.03]">
+          <span className="text-xs font-mono text-white/60 px-2.5 py-0.5 rounded-full border border-white/10 bg-white/[0.03]">
             Instant Voice
           </span>
         </div>
 
-        <div className="bg-black/40 rounded-xl border border-white/[0.04] p-3 text-white/70 text-xs sm:text-sm leading-relaxed italic line-clamp-3">
+        <div className="bg-black/50 rounded-xl border border-white/[0.06] p-3.5 text-white/80 text-sm leading-relaxed max-h-40 overflow-y-auto">
           &ldquo;Hold on. Official records show MC 884921 only operates 3 trucks with a 38.5 percent violation rate, and Texas diesel is 3.39 dollars. We reject your inflated quote.&rdquo;
         </div>
 
         <button
           onClick={isCounterSpeaking ? onStopAudio : onPlayAudio}
-          className={`w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-2 border transition-all cursor-pointer ${
-            isCounterSpeaking
-              ? "bg-red-500/20 hover:bg-red-500/30 text-red-400 border-red-500/40 animate-pulse"
-              : "bg-white/[0.05] hover:bg-white/[0.1] text-white border-white/10"
-          }`}
+          className="w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-2 border border-white/15 bg-white/[0.05] hover:bg-white/[0.1] text-white transition-all cursor-pointer"
         >
           {isCounterSpeaking ? (
             <>
@@ -63,22 +59,22 @@ export const CounterStrikeDock: React.FC<CounterStrikeDockProps> = ({
       {/* Rate Delta Header */}
       <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
         <div className="flex items-center gap-2">
-          <Check className="w-4 h-4 text-emerald-400" />
+          <Check className="w-4 h-4 text-white" />
           <span className="text-sm font-semibold text-white">
             Voice Rebuttal Ready ({counterStrike.total_bluffs} False Claims Debunked)
           </span>
         </div>
         {counterStrike.savings && (
           <div className="flex items-center gap-2 text-xs font-mono">
-            <span className="text-xs font-mono text-emerald-400 px-2.5 py-0.5 rounded-full bg-emerald-400/10 border border-emerald-400/25 tabular-nums font-semibold">
+            <span className="text-xs font-mono text-white px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/20 tabular-nums font-semibold">
               {counterStrike.savings}
             </span>
           </div>
         )}
       </div>
 
-      {/* Spoken Script Box */}
-      <div className="bg-black/40 rounded-xl border border-white/[0.04] p-3 text-white text-xs sm:text-sm leading-relaxed italic line-clamp-3">
+      {/* Spoken Script Box - Fully Visible & Scrollable Without Clipping */}
+      <div className="bg-black/50 rounded-xl border border-white/[0.06] p-3.5 text-white/95 text-sm leading-relaxed max-h-44 overflow-y-auto font-sans">
         &ldquo;{counterStrike.script}&rdquo;
       </div>
 
@@ -86,7 +82,7 @@ export const CounterStrikeDock: React.FC<CounterStrikeDockProps> = ({
       {isCounterSpeaking ? (
         <button
           onClick={onStopAudio}
-          className="w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 transition-all cursor-pointer animate-pulse shadow-md"
+          className="w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-2 bg-white text-black hover:bg-neutral-200 active:scale-[0.99] shadow-md transition-all cursor-pointer"
         >
           <Square className="w-3.5 h-3.5 fill-current" />
           <span>Stop Voice</span>

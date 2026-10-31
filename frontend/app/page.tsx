@@ -96,7 +96,7 @@ export default function WarRoomHUD() {
             <div className="bg-[#09090b] rounded-2xl border border-white/[0.08] p-4 flex flex-col gap-3">
               <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.06]">
                 <div className="flex items-center gap-2">
-                  <ShieldAlert className="w-4 h-4 text-amber-400" />
+                  <ShieldAlert className="w-4 h-4 text-white/80" />
                   <span className="text-sm font-semibold text-white">
                     Detected Inaccuracies ({bluffReceipts.length})
                   </span>

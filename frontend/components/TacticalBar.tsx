@@ -47,7 +47,7 @@ export const TacticalBar: React.FC<TacticalBarProps> = ({
         <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-white/[0.08]">
           <span
             className={`w-2 h-2 rounded-full ${
-              isConnected ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" : "bg-red-400"
+              isConnected ? "bg-white" : "bg-white/30"
             }`}
           />
           <span className="text-xs text-white/50 font-mono">
@@ -86,9 +86,9 @@ export const TacticalBar: React.FC<TacticalBarProps> = ({
         {(isCarrierSpeaking || isCounterSpeaking) && onStopVoice && (
           <button
             onClick={onStopVoice}
-            className="flex items-center gap-2 h-9 px-4 rounded-full text-sm font-semibold bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 transition-all cursor-pointer animate-pulse shadow-md"
+            className="flex items-center gap-2 h-9 px-4 rounded-full text-sm font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all cursor-pointer shadow-md"
           >
-            <Square className="w-3.5 h-3.5 fill-current" />
+            <Square className="w-3.5 h-3.5 fill-current text-white" />
             <span>Stop Voice</span>
           </button>
         )}

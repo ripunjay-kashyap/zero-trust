@@ -41,20 +41,20 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
   const getStatusBadge = (status: "STANDBY" | "HUNTING" | "VERIFIED") => {
     if (status === "VERIFIED") {
       return (
-        <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 text-emerald-400 font-semibold">
+        <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-white/20 bg-white/[0.04] text-white font-semibold">
           Verified
         </span>
       );
     }
     if (status === "HUNTING") {
       return (
-        <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-amber-400/30 bg-amber-400/10 text-amber-400 font-semibold animate-pulse">
+        <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-white/20 bg-white/[0.04] text-white/80 font-semibold animate-pulse">
           Checking Live
         </span>
       );
     }
     return (
-      <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-white/10 bg-white/[0.03] text-white/50">
+      <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-white/10 bg-white/[0.02] text-white/40">
         Standby
       </span>
     );
@@ -112,7 +112,7 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
           ) : (
             <div className="flex flex-col items-center justify-center gap-3 max-w-sm text-center">
               <div className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-white/40">
-                <Search className={`w-5 h-5 ${swarmLanes.lane2.status === "HUNTING" ? "text-amber-400 animate-spin" : "text-white/40"}`} />
+                <Search className={`w-5 h-5 ${swarmLanes.lane2.status === "HUNTING" ? "text-white animate-spin" : "text-white/40"}`} />
               </div>
               <div className="text-sm font-semibold text-white/80">
                 {swarmLanes.lane2.status === "HUNTING" ? "Fetching Live Web Proof..." : "Awaiting Live Verification"}

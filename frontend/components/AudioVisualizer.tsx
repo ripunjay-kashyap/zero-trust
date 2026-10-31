@@ -133,7 +133,7 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
           </span>
         </div>
         <div className="flex items-center gap-2 text-xs font-mono text-white/50">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-white/80 animate-pulse" />
           <span>{isIntercepting ? "Listening in Real Time" : "Ready"}</span>
         </div>
       </div>

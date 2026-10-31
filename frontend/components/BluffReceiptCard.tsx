@@ -14,13 +14,13 @@ export const BluffReceiptCard: React.FC<BluffReceiptCardProps> = ({ receipt }) =
       {/* Header & Verification Badge */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-amber-400" />
+          <AlertCircle className="w-4 h-4 text-white/80" />
           <span className="text-sm font-semibold text-white tracking-tight">
             {receipt.title}
           </span>
         </div>
 
-        <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-400 font-semibold">
+        <span className="text-xs font-mono px-2.5 py-0.5 rounded-full border border-white/20 bg-white/[0.04] text-white font-semibold">
           False Claim
         </span>
       </div>
@@ -36,7 +36,7 @@ export const BluffReceiptCard: React.FC<BluffReceiptCardProps> = ({ receipt }) =
           </div>
         </div>
         <div>
-          <div className="text-xs text-emerald-400/90 uppercase tracking-wider">
+          <div className="text-xs text-white/80 uppercase tracking-wider">
             {receipt.actual_label || "VERIFIED TRUTH"}
           </div>
           <div className="text-white font-semibold text-sm mt-1 tabular-nums break-words">
@@ -58,7 +58,7 @@ export const BluffReceiptCard: React.FC<BluffReceiptCardProps> = ({ receipt }) =
         <div className="pt-2.5 border-t border-white/[0.06] flex flex-col gap-2">
           <div className="flex items-center justify-between text-xs font-mono text-white/50">
             <span>Official Source Evidence</span>
-            <span className="text-emerald-400 flex items-center gap-1 font-medium">
+            <span className="text-white/80 flex items-center gap-1 font-medium">
               Visual Proof
             </span>
           </div>
