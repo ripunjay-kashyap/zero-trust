@@ -8,16 +8,27 @@ interface AudioVisualizerProps {
   isCarrierSpeaking?: boolean;
   transcriptDeltas: Array<{ word: string; entities: string[] }>;
   partialTranscript: string;
+  onVerifyJudgeStatement?: (statement: string) => void;
 }
 
 export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
   isIntercepting,
   isCarrierSpeaking = false,
   transcriptDeltas,
+  onVerifyJudgeStatement,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animFrameRef = useRef<number | null>(null);
+  const [judgeInput, setJudgeInput] = React.useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (judgeInput.trim() && onVerifyJudgeStatement) {
+      onVerifyJudgeStatement(judgeInput.trim());
+      setJudgeInput("");
+    }
+  };
 
   // Auto-scroll transcript container as words arrive
   useEffect(() => {
@@ -161,6 +172,25 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
           </div>
         )}
       </div>
+
+      {/* Live Judge Grounding Prompt */}
+      <form onSubmit={handleSubmit} className="flex items-center gap-2 pt-1">
+        <input
+          type="text"
+          value={judgeInput}
+          onChange={(e) => setJudgeInput(e.target.value)}
+          disabled={isIntercepting}
+          placeholder="Judge Live Test: Type or speak any claim (e.g. Mount Everest is in Switzerland)..."
+          className="flex-1 h-8 px-3.5 rounded-full bg-black/60 border border-white/10 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 transition-colors disabled:opacity-40"
+        />
+        <button
+          type="submit"
+          disabled={!judgeInput.trim() || isIntercepting}
+          className="h-8 px-4 rounded-full bg-white text-black text-xs font-medium hover:bg-neutral-200 transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+        >
+          Verify Live
+        </button>
+      </form>
     </div>
   );
 };

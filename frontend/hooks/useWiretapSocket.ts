@@ -355,6 +355,18 @@ export function useWiretapSocket() {
     }
   }, []);
 
+  const verifyJudgeStatement = useCallback((statement: string) => {
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.send(
+        JSON.stringify({
+          type: "START_WIRETAP",
+          mode: "judge_statement",
+          statement,
+        })
+      );
+    }
+  }, []);
+
   return {
     isConnected,
     isIntercepting,
@@ -368,6 +380,7 @@ export function useWiretapSocket() {
     bluffReceipts,
     counterStrike,
     startWiretap,
+    verifyJudgeStatement,
     prewarmSwarm,
     playCounterAudio,
   };

@@ -23,6 +23,7 @@ export default function WarRoomHUD() {
     bluffReceipts,
     counterStrike,
     startWiretap,
+    verifyJudgeStatement,
     prewarmSwarm,
     playCounterAudio,
   } = useWiretapSocket();
@@ -49,6 +50,7 @@ export default function WarRoomHUD() {
             isCarrierSpeaking={isCarrierSpeaking}
             transcriptDeltas={transcriptDeltas}
             partialTranscript={partialTranscript}
+            onVerifyJudgeStatement={verifyJudgeStatement}
           />
 
           {/* Bluff Receipt Stack (Natural Full-Height Flow) */}
