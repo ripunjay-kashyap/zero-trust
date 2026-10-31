@@ -1,19 +1,21 @@
 "use client";
 
 import React from "react";
-import { Play, ArrowRight, Check, Volume2 } from "lucide-react";
+import { Play, Square, Check, Volume2 } from "lucide-react";
 import { CounterStrikeData } from "../hooks/useWiretapSocket";
 
 interface CounterStrikeDockProps {
   counterStrike: CounterStrikeData | null;
   isCounterSpeaking?: boolean;
   onPlayAudio: () => void;
+  onStopAudio?: () => void;
 }
 
 export const CounterStrikeDock: React.FC<CounterStrikeDockProps> = ({
   counterStrike,
   isCounterSpeaking = false,
   onPlayAudio,
+  onStopAudio,
 }) => {
   if (!counterStrike) {
     return (
@@ -33,11 +35,24 @@ export const CounterStrikeDock: React.FC<CounterStrikeDockProps> = ({
         </div>
 
         <button
-          onClick={onPlayAudio}
-          className="w-full h-10 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-white text-sm font-semibold flex items-center justify-center gap-2 border border-white/10 transition-all cursor-pointer"
+          onClick={isCounterSpeaking ? onStopAudio : onPlayAudio}
+          className={`w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-2 border transition-all cursor-pointer ${
+            isCounterSpeaking
+              ? "bg-red-500/20 hover:bg-red-500/30 text-red-400 border-red-500/40 animate-pulse"
+              : "bg-white/[0.05] hover:bg-white/[0.1] text-white border-white/10"
+          }`}
         >
-          <Play className="w-3.5 h-3.5 fill-current text-white/80" />
-          <span>Play Sample Voice Response</span>
+          {isCounterSpeaking ? (
+            <>
+              <Square className="w-3.5 h-3.5 fill-current" />
+              <span>Stop Voice</span>
+            </>
+          ) : (
+            <>
+              <Play className="w-3.5 h-3.5 fill-current text-white/80" />
+              <span>Play Sample Voice Response</span>
+            </>
+          )}
         </button>
       </div>
     );
@@ -68,21 +83,23 @@ export const CounterStrikeDock: React.FC<CounterStrikeDockProps> = ({
       </div>
 
       {/* Prominent Action Button */}
-      <button
-        onClick={onPlayAudio}
-        className={`w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-          isCounterSpeaking
-            ? "bg-white/20 text-white border border-white/20"
-            : "bg-white text-black hover:bg-neutral-200 active:scale-[0.99] shadow-md"
-        }`}
-      >
-        <Volume2 className="w-4 h-4 fill-current" />
-        <span>
-          {isCounterSpeaking
-            ? "Speaking Response Live..."
-            : "Play Voice Rebuttal"}
-        </span>
-      </button>
+      {isCounterSpeaking ? (
+        <button
+          onClick={onStopAudio}
+          className="w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 transition-all cursor-pointer animate-pulse shadow-md"
+        >
+          <Square className="w-3.5 h-3.5 fill-current" />
+          <span>Stop Voice</span>
+        </button>
+      ) : (
+        <button
+          onClick={onPlayAudio}
+          className="w-full h-10 rounded-full text-sm font-semibold flex items-center justify-center gap-2 bg-white text-black hover:bg-neutral-200 active:scale-[0.99] shadow-md transition-all cursor-pointer"
+        >
+          <Volume2 className="w-4 h-4 fill-current" />
+          <span>Play Voice Rebuttal</span>
+        </button>
+      )}
     </div>
   );
 };

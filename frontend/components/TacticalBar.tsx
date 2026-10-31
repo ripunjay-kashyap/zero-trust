@@ -1,15 +1,18 @@
 "use client";
 
 import React from "react";
-import { Play, Mic, Sparkles } from "lucide-react";
+import { Play, Mic, Sparkles, Square } from "lucide-react";
 
 interface TacticalBarProps {
   isConnected: boolean;
   isIntercepting: boolean;
   isWarming: boolean;
   stopwatch: number;
+  isCarrierSpeaking?: boolean;
+  isCounterSpeaking?: boolean;
   onStartWiretap: (mode: "inject" | "mic") => void;
   onPrewarm: () => void;
+  onStopVoice?: () => void;
 }
 
 export const TacticalBar: React.FC<TacticalBarProps> = ({
@@ -17,8 +20,11 @@ export const TacticalBar: React.FC<TacticalBarProps> = ({
   isIntercepting,
   isWarming,
   stopwatch,
+  isCarrierSpeaking = false,
+  isCounterSpeaking = false,
   onStartWiretap,
   onPrewarm,
+  onStopVoice,
 }) => {
   return (
     <header className="sticky top-0 z-50 h-16 px-6 backdrop-blur-md bg-black/85 border-b border-white/[0.08] flex items-center justify-between select-none">
@@ -75,6 +81,17 @@ export const TacticalBar: React.FC<TacticalBarProps> = ({
           <Mic className="w-3.5 h-3.5 text-white/60" />
           <span className="hidden sm:inline">Use Microphone</span>
         </button>
+
+        {/* Stop Voice Button (Appears whenever audio is speaking) */}
+        {(isCarrierSpeaking || isCounterSpeaking) && onStopVoice && (
+          <button
+            onClick={onStopVoice}
+            className="flex items-center gap-2 h-9 px-4 rounded-full text-sm font-semibold bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 transition-all cursor-pointer animate-pulse shadow-md"
+          >
+            <Square className="w-3.5 h-3.5 fill-current" />
+            <span>Stop Voice</span>
+          </button>
+        )}
 
         {/* Pre-warm Browser Swarm */}
         <button

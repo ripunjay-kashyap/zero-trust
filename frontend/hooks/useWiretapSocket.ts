@@ -375,6 +375,27 @@ export function useWiretapSocket() {
     }
   }, []);
 
+  const stopVoice = useCallback(() => {
+    if (counterAudioRef.current) {
+      counterAudioRef.current.pause();
+      counterAudioRef.current.currentTime = 0;
+    }
+    if (carrierAudioRef.current) {
+      carrierAudioRef.current.pause();
+      carrierAudioRef.current.currentTime = 0;
+    }
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {}
+    }
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setIsCounterSpeaking(false);
+    setIsCarrierSpeaking(false);
+  }, []);
+
   const verifyJudgeStatement = useCallback((statement: string) => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(
@@ -403,5 +424,6 @@ export function useWiretapSocket() {
     verifyJudgeStatement,
     prewarmSwarm,
     playCounterAudio,
+    stopVoice,
   };
 }

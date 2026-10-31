@@ -26,6 +26,7 @@ export default function WarRoomHUD() {
     verifyJudgeStatement,
     prewarmSwarm,
     playCounterAudio,
+    stopVoice,
   } = useWiretapSocket();
 
   return (
@@ -36,8 +37,11 @@ export default function WarRoomHUD() {
         isIntercepting={isIntercepting}
         isWarming={isWarming}
         stopwatch={stopwatch}
+        isCarrierSpeaking={isCarrierSpeaking}
+        isCounterSpeaking={isCounterSpeaking}
         onStartWiretap={startWiretap}
         onPrewarm={prewarmSwarm}
+        onStopVoice={stopVoice}
       />
 
       {/* Main Container */}
@@ -123,6 +127,7 @@ export default function WarRoomHUD() {
               counterStrike={counterStrike}
               isCounterSpeaking={isCounterSpeaking}
               onPlayAudio={playCounterAudio}
+              onStopAudio={stopVoice}
             />
           </section>
 
