@@ -618,14 +618,40 @@ async def execute_live_swarm_and_counter(websocket: WebSocket, session_state: Di
                 "timestamp": time.time(),
             })
 
+        # Send Lane 1 Update with the verified TinyFish fuel spot index
+        lane1_res = swarm_bundle.get("lane1", {})
+        if lane1_res:
+            await websocket.send_json({
+                "type": "SWARM_LANE_UPDATE",
+                "lane": 1,
+                "status": "VERIFIED",
+                "title": f"Source 1 · Live Market Prices ({lane1_res.get('source', 'TinyFetch')})",
+                "spot_label": "Real Market Price",
+                "spot_value": f"${lane1_res.get('actual_fuel', 3.63):.2f} / gal",
+                "claimed_label": "Claimed Price",
+                "claimed_value": f"${lane1_res.get('claimed_fuel', 4.15):.2f} / gal",
+                "markup_badge": f"+${lane1_res.get('delta_per_gal', 0.52):.2f}/gal inflation",
+            })
+
         # Send Lane 2 Update with the real Playwright DOM snapshot
         if swarm_bundle.get("lane2", {}).get("screenshot_base64"):
             await websocket.send_json({
                 "type": "SWARM_LANE_UPDATE",
                 "lane": 2,
                 "status": "VERIFIED",
-                "title": f"Lane 2 · FMCSA SAFER Snapshot (MC-{session_state['mc_number']})",
+                "title": f"Source 2 · FMCSA SAFER Snapshot (MC-{session_state['mc_number']})",
                 "snapshot_url": swarm_bundle["lane2"]["screenshot_base64"],
+            })
+
+        # Send Lane 3 Update with the verified Watchlist / Chameleon data
+        lane3_res = swarm_bundle.get("lane3", {})
+        if lane3_res:
+            await websocket.send_json({
+                "type": "SWARM_LANE_UPDATE",
+                "lane": 3,
+                "status": "VERIFIED",
+                "title": f"Source 3 · Fraud & Entity Stream (MC-{session_state['mc_number']})",
+                "stream_url": lane3_res.get("streaming_url"),
             })
 
         # Synthesize counter speech via Modal GPU
@@ -655,9 +681,8 @@ async def execute_live_swarm_and_counter(websocket: WebSocket, session_state: Di
 async def run_judge_statement_wiretap(websocket: WebSocket, session_state: Dict[str, Any], statement: str):
     """
     Live demonstration of arbitrary judge claim verification via TinyFish & Playwright.
+    Routes currency claims to Lane 1 and entity/world claims to Lane 2.
     """
-    from backend.tinyfish_verifier import judge_verifier
-
     words = statement.split()
     partial = ""
     for w in words:
@@ -670,7 +695,79 @@ async def run_judge_statement_wiretap(websocket: WebSocket, session_state: Dict[
         })
         await asyncio.sleep(0.04)
 
-    # Dispatch Swarm
+    # Check if currency claim (e.g., 1 USD is 500 INR or 200 INR)
+    curr_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:inr|rupees)", statement, re.IGNORECASE)
+    if curr_match and ("usd" in statement.lower() or "dollar" in statement.lower()):
+        claimed_inr = float(curr_match.group(1))
+        from backend.test_claim_fetch import verify_currency_claim
+        curr_res = await verify_currency_claim(claimed_inr)
+
+        # Dispatch Lane 1
+        await websocket.send_json({
+            "type": "SWARM_DISPATCHED",
+            "lane": 1,
+            "lane_name": "Google Finance Live Currency Swarm",
+            "claim": f"1 USD = {claimed_inr:.2f} INR",
+        })
+
+        # Deliver receipt for Lane 1
+        curr_receipt = {
+            "id": f"receipt_curr_{int(time.time()*1000)}",
+            "lane": 1,
+            "category": "FUEL_INDEX",
+            "severity": "MARGIN_INFLATION",
+            "title": "Currency Rate Check: USD to INR",
+            "claimed_label": "CLAIMED RATE",
+            "claimed_value": f"1 USD = {claimed_inr:.2f} INR",
+            "actual_label": "GOOGLE FINANCE LIVE",
+            "actual_value": f"1 USD = {curr_res['actual_inr']:.2f} INR",
+            "discrepancy": curr_res["discrepancy"],
+            "badge_color": "red",
+        }
+        await websocket.send_json({
+            "type": "BLUFF_RECEIPT_READY",
+            "receipt": curr_receipt,
+            "timestamp": time.time(),
+        })
+
+        # Deliver Lane 1 Update
+        await websocket.send_json({
+            "type": "SWARM_LANE_UPDATE",
+            "lane": 1,
+            "status": "VERIFIED",
+            "title": "Source 1 · Currency Live Market Truth (TinyFetch)",
+            "spot_label": "Google Finance Spot Rate",
+            "spot_value": f"1 USD = {curr_res['actual_inr']:.2f} INR",
+            "claimed_label": "Claimed Exchange Rate",
+            "claimed_value": f"1 USD = {claimed_inr:.2f} INR",
+            "markup_badge": curr_res["discrepancy"],
+        })
+
+        # Synthesize targeted counter speech via Kokoro GPU
+        counter_script = curr_res["counter_strike_script"]
+        counter_b64, audio_source, synth_latency_ms = await synthesize_counter_speech(
+            counter_script
+        )
+
+        await websocket.send_json({
+            "type": "COUNTER_AUDIO_READY",
+            "script": counter_script,
+            "audio_base64": counter_b64,
+            "audio_source": audio_source,
+            "synth_latency_ms": round(synth_latency_ms, 2),
+            "savings": "Fact Check: FALSE CLAIM",
+            "proposed_rate": f"1 USD = {curr_res['actual_inr']:.2f} INR",
+            "original_rate": f"1 USD = {claimed_inr:.2f} INR",
+            "compilation_ms": 0.01,
+            "total_bluffs": 1,
+        })
+
+        await websocket.send_json({"type": "AUDIO_STREAM_FINISHED"})
+        return
+
+    # Non-currency: Dispatch Lane 2 (Official Web Ground Truth via TinyFish & Playwright)
+    from backend.tinyfish_verifier import judge_verifier
+
     await websocket.send_json({
         "type": "SWARM_DISPATCHED",
         "lane": 2,
@@ -864,14 +961,40 @@ async def run_injected_audio_wiretap(websocket: WebSocket, session_state: Dict[s
                 "timestamp": time.time(),
             })
 
+        # Send Lane 1 Update with the verified TinyFish fuel spot index
+        lane1_res = swarm_bundle.get("lane1", {})
+        if lane1_res:
+            await websocket.send_json({
+                "type": "SWARM_LANE_UPDATE",
+                "lane": 1,
+                "status": "VERIFIED",
+                "title": f"Source 1 · Live Market Prices ({lane1_res.get('source', 'TinyFetch')})",
+                "spot_label": "Real Market Price",
+                "spot_value": f"${lane1_res.get('actual_fuel', 3.63):.2f} / gal",
+                "claimed_label": "Claimed Price",
+                "claimed_value": f"${lane1_res.get('claimed_fuel', 4.15):.2f} / gal",
+                "markup_badge": f"+${lane1_res.get('delta_per_gal', 0.52):.2f}/gal inflation",
+            })
+
         # Send Lane 2 Update with the real Playwright DOM snapshot
         if swarm_bundle.get("lane2", {}).get("screenshot_base64"):
             await websocket.send_json({
                 "type": "SWARM_LANE_UPDATE",
                 "lane": 2,
                 "status": "VERIFIED",
-                "title": f"Lane 2 · FMCSA SAFER Snapshot (MC-{session_state['mc_number']})",
+                "title": f"Source 2 · FMCSA SAFER Snapshot (MC-{session_state['mc_number']})",
                 "snapshot_url": swarm_bundle["lane2"]["screenshot_base64"],
+            })
+
+        # Send Lane 3 Update with the verified Watchlist / Chameleon data
+        lane3_res = swarm_bundle.get("lane3", {})
+        if lane3_res:
+            await websocket.send_json({
+                "type": "SWARM_LANE_UPDATE",
+                "lane": 3,
+                "status": "VERIFIED",
+                "title": f"Source 3 · Fraud & Entity Stream (MC-{session_state['mc_number']})",
+                "stream_url": lane3_res.get("streaming_url"),
             })
 
         # Synthesize counter audio via Modal GPU Kokoro (with 1.0s fallback to local asset)

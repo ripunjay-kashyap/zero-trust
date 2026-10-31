@@ -41,6 +41,21 @@ When a speaker makes a factually false or economically inflated claim, the engin
 
 ---
 
+## Pitch Deck & Visual Evidence Assets
+
+The `screenshots/` directory provides high-resolution, focused element crops formatted specifically for investor pitch decks, live demonstrations, and technical slides:
+
+| Asset | Description | Preview |
+| :--- | :--- | :--- |
+| **`pitch_01_waveform.png`** | **Waveform & Live Intercept**: High-frequency canvas audio waveform, incremental word-level transcription deltas, and real-time entity token extraction pills. | [View Asset](screenshots/pitch_01_waveform.png) |
+| **`pitch_02_fmcsa_safer_table.png`** | **Official Registry Ground Truth**: Direct high-DPI crop of the official FMCSA SAFER safety audit table with Playwright neon highlights bounding the 38.5% out-of-service failure rate. | [View Asset](screenshots/pitch_02_fmcsa_safer_table.png) |
+| **`pitch_03_tinyfish_swarm_lanes.png`** | **Concurrent Verification Swarm**: 3-lane parallel audit viewport demonstrating live market benchmarks (AAA Texas spot diesel), rendered visual web evidence, and entity risk dossiers. | [View Asset](screenshots/pitch_03_tinyfish_swarm_lanes.png) |
+| **`pitch_04_architecture_diagram.png`** | **End-to-End Technical Architecture**: Polished visual diagram detailing the sub-2.2 second pipeline from WebSocket audio ingest through speculative regex triggering to serverless GPU voice synthesis. | [View Asset](screenshots/pitch_04_architecture_diagram.png) |
+
+![ZeroTrust Technical Architecture](screenshots/pitch_04_architecture_diagram.png)
+
+---
+
 ## System Architecture
 
 ```mermaid

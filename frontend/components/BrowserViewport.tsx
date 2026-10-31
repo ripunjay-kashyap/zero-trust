@@ -74,19 +74,59 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
           {getStatusBadge(swarmLanes.lane1.status)}
         </div>
 
-        <div className="bg-black/60 rounded-xl border border-white/[0.04] p-3.5 flex items-center justify-between text-sm font-mono">
-          <div>
-            <span className="text-white/50 text-xs uppercase tracking-wider block">Real Market Price</span>
-            <span className="text-white font-semibold text-base tabular-nums">{swarmLanes.lane1.spotValue || "$3.39 / gal"}</span>
+        {swarmLanes.lane1.status === "VERIFIED" && swarmLanes.lane1.spotValue ? (
+          <div className="bg-black/60 rounded-xl border border-white/[0.04] p-3.5 flex items-center justify-between text-sm font-mono">
+            <div>
+              <span className="text-white/50 text-xs uppercase tracking-wider block">
+                {swarmLanes.lane1.spotLabel || "Real Market Price"}
+              </span>
+              <span className="text-white font-semibold text-base tabular-nums">
+                {swarmLanes.lane1.spotValue}
+              </span>
+            </div>
+            <div>
+              <span className="text-white/50 text-xs uppercase tracking-wider block">
+                {swarmLanes.lane1.claimedLabel || "Claimed Price"}
+              </span>
+              <span className="text-white/60 font-medium text-base tabular-nums line-through">
+                {swarmLanes.lane1.claimedValue}
+              </span>
+            </div>
+            <span className="px-3 py-1 rounded-full bg-white/10 text-white font-semibold border border-white/20 tabular-nums text-xs">
+              {swarmLanes.lane1.markup || "+$0.47/gal inflation"}
+            </span>
           </div>
-          <div>
-            <span className="text-white/50 text-xs uppercase tracking-wider block">Claimed Price</span>
-            <span className="text-white/60 font-medium text-base tabular-nums line-through">{swarmLanes.lane1.claimedValue || "$4.15 / gal"}</span>
+        ) : swarmLanes.lane1.status === "HUNTING" ? (
+          <div className="bg-black/60 rounded-xl border border-white/[0.04] p-3.5 flex items-center justify-between text-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-white/80">
+                <Globe className="w-4 h-4 text-white animate-spin" />
+              </div>
+              <div>
+                <span className="text-white font-medium text-sm block">Querying Live Market Benchmarks...</span>
+                <span className="text-white/40 text-xs font-mono">Auditing real-time spot rate via TinyFish</span>
+              </div>
+            </div>
+            <span className="text-xs font-mono px-2.5 py-1 rounded-full border border-white/20 bg-white/[0.04] text-white/80 animate-pulse">
+              Fetching
+            </span>
           </div>
-          <span className="px-3 py-1 rounded-full bg-white/10 text-white font-semibold border border-white/20 tabular-nums text-xs">
-            {swarmLanes.lane1.markup || "+$0.76/gal inflation"}
-          </span>
-        </div>
+        ) : (
+          <div className="bg-black/60 rounded-xl border border-white/[0.04] p-3.5 flex items-center justify-between text-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-white/40">
+                <Globe className="w-4 h-4 text-white/50" />
+              </div>
+              <div>
+                <span className="text-white font-medium text-sm block">Live Spot Benchmarks</span>
+                <span className="text-white/40 text-xs font-mono">AAA Texas Diesel & Google Finance Live Feed</span>
+              </div>
+            </div>
+            <span className="text-xs font-mono px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.02] text-white/40">
+              Awaiting Claim
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Source 2: Official Web Proof & Government Registries */}
@@ -144,14 +184,69 @@ export const BrowserViewport: React.FC<BrowserViewportProps> = ({ swarmLanes }) 
           </div>
         </div>
 
-        {/* Embedded Iframe of Watchlist Portal */}
+        {/* Live Stream, Verified Intelligence Feed, or Standby Placeholder */}
         <div className="flex-1 rounded-xl border border-white/10 overflow-hidden bg-black/60 relative">
-          <iframe
-            src={watchlistMirrorUrl}
-            title="Entity Watchlist Mirror"
-            className="w-full h-full border-0 select-none pointer-events-auto"
-            loading="eager"
-          />
+          {swarmLanes.lane3.status === "VERIFIED" ? (
+            <div className="p-4 flex flex-col gap-3 h-full overflow-y-auto font-mono text-xs">
+              <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                <div>
+                  <span className="text-white font-bold text-sm block">MC-884921</span>
+                  <span className="text-white/60 text-xs">BLUE STAR FREIGHT LLC</span>
+                </div>
+                <span className="px-2.5 py-1 rounded-full bg-white/10 text-white font-semibold border border-white/20 text-xs">
+                  CRITICAL FRAUD ALERT
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-white/80">
+                <div className="bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
+                  <span className="text-white/40 block text-[10px] uppercase">Registered Address</span>
+                  <span className="text-white text-xs mt-0.5 block font-sans">
+                    9800 Richmond Ave, Suite 400, Houston, TX
+                  </span>
+                  <span className="text-white/50 text-[10px] mt-1 block">Regus Virtual Coworking</span>
+                </div>
+                <div className="bg-white/[0.02] p-2.5 rounded-lg border border-white/5">
+                  <span className="text-white/40 block text-[10px] uppercase">Registry Status</span>
+                  <span className="text-white text-xs mt-0.5 block">VIRTUAL OFFICE IDENTIFIED</span>
+                  <span className="text-white/50 text-[10px] mt-1 block">0 Physical Trucks / Yards</span>
+                </div>
+              </div>
+              <div className="bg-white/[0.02] p-2.5 rounded-lg border border-white/5 flex flex-col gap-1">
+                <span className="text-white/40 text-[10px] uppercase">Flagged Registry Violations</span>
+                <span className="text-white/90">• Chameleon carrier history detected</span>
+                <span className="text-white/90">• Prior DOT revocation under related entity MC-714022</span>
+                <span className="text-white/90">• Zero registered physical terminal or power units</span>
+              </div>
+              <div className="mt-auto text-[10px] text-white/40 pt-2 border-t border-white/5 flex items-center justify-between">
+                <span>Verified via Chameleon Registry & Secretary of State</span>
+                <span className="font-semibold text-white/60">Live Swarm Active</span>
+              </div>
+            </div>
+          ) : swarmLanes.lane3.status === "HUNTING" ? (
+            <div className="h-full flex flex-col items-center justify-center gap-3 p-6 text-center">
+              <div className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-white/80">
+                <ShieldCheck className="w-5 h-5 text-white animate-pulse" />
+              </div>
+              <div className="text-sm font-semibold text-white/80">
+                Auditing Chameleon & Entity Registries...
+              </div>
+              <div className="text-xs text-white/50 leading-relaxed font-sans max-w-sm">
+                TinyFish is cross-checking registered address, corporate filings, and prior DOT revocation history.
+              </div>
+            </div>
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center gap-3 p-6 text-center">
+              <div className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-white/40">
+                <ShieldCheck className="w-5 h-5 text-white/40" />
+              </div>
+              <div className="text-sm font-semibold text-white/80">
+                Awaiting Entity Identity Stream
+              </div>
+              <div className="text-xs text-white/50 leading-relaxed font-sans max-w-sm">
+                Carrier DOT/MC lookups, chameleon carrier detection, and live TinyFish cloud browser sessions will stream here in real time.
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

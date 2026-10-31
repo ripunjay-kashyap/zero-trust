@@ -129,39 +129,49 @@ class VerificationSwarm:
         """
         t0 = time.time()
         actual_fuel = FALLBACK_DIESEL_RATE
-        source = "EIA/AAA Texas Regional Spot Index"
+        source = "AAA Texas Regional Spot Index"
         is_live = False
 
-        if TINYFISH_API_KEY and PORTAL_MODE == "LIVE":
+        if TINYFISH_API_KEY:
             try:
                 headers = {
                     "X-API-Key": TINYFISH_API_KEY,
                     "Content-Type": "application/json",
                 }
+                # Direct live fetch of AAA Texas state fuel index
                 payload = {
                     "urls": [LIVE_AAA_DIESEL_URL],
                     "format": "markdown",
                 }
-                async with httpx.AsyncClient(timeout=2.0) as client:
+                async with httpx.AsyncClient(timeout=4.0) as client:
                     resp = await client.post(
                         "https://agent.tinyfish.ai/v1/fetch",
                         headers=headers,
                         json=payload,
                     )
                     if resp.status_code == 200:
-                        data = resp.json()
-                        text = data.get("results", [{}])[0].get("text", "")
-                        match = re.search(r"(?:Texas\s+Avg\.?\s*\$|Diesel.*?\$?)(\d+\.\d{2})", text, re.IGNORECASE)
-                        if match:
-                            actual_fuel = float(match.group(1))
-                            source = "AAA Texas Live Price Index (TinyFetch)"
+                        text = resp.json().get("results", [{}])[0].get("text", "")
+                        # Match current avg row: | Current Avg. | $3.7141 | $4.2286 | $4.6032 | $5.7938 |
+                        table_match = re.search(r"\|\s*Current Avg\.\s*\|\s*\$([0-9\.]+)\s*\|\s*\$([0-9\.]+)\s*\|\s*\$([0-9\.]+)\s*\|\s*\$([0-9\.]+)\s*\|", text)
+                        if table_match:
+                            # 4th price column is Diesel
+                            diesel_price = float(table_match.group(4))
+                            actual_fuel = round(diesel_price, 2)
+                            source = "AAA Texas Live Spot Index (TinyFetch)"
                             is_live = True
-            except Exception:
-                # Transparent fallback to deterministic index on network latency
+                        else:
+                            # Fallback regex for Texas avg or diesel
+                            match = re.search(r"Diesel[^\$]*\$(\d+\.\d{2})", text, re.IGNORECASE)
+                            if match:
+                                actual_fuel = round(float(match.group(1)), 2)
+                                source = "AAA Texas Live Spot Index (TinyFetch)"
+                                is_live = True
+            except Exception as e:
+                print(f"[Lane1] TinyFish live fuel check error: {e}")
                 actual_fuel = FALLBACK_DIESEL_RATE
 
         delta = round(claimed_fuel - actual_fuel, 2)
-        is_bluff = delta > 0.25
+        is_bluff = delta > 0.15
 
         elapsed_ms = (time.time() - t0) * 1000
         return {

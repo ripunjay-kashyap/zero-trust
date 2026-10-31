@@ -195,12 +195,14 @@ export function useWiretapSocket() {
           if (exists) return prev;
           return [...prev, normalizedReceipt];
         });
-        // Transition lane to VERIFIED
-        setSwarmLanes((prev) => ({
-          lane1: { ...prev.lane1, status: "VERIFIED" },
-          lane2: { ...prev.lane2, status: "VERIFIED" },
-          lane3: { ...prev.lane3, status: "VERIFIED" },
-        }));
+        // Transition only the targeted lane to VERIFIED based on receipt lane or category
+        const targetLane = raw.lane || (raw.category === "FUEL_INDEX" ? 1 : raw.category === "WATCHLIST_IDENTITY" ? 3 : 2);
+        setSwarmLanes((prev) => {
+          if (targetLane === 1) return { ...prev, lane1: { ...prev.lane1, status: "VERIFIED" } };
+          if (targetLane === 2) return { ...prev, lane2: { ...prev.lane2, status: "VERIFIED" } };
+          if (targetLane === 3) return { ...prev, lane3: { ...prev.lane3, status: "VERIFIED" } };
+          return prev;
+        });
         break;
 
       case "SWARM_LANE_UPDATE":
@@ -217,17 +219,27 @@ export function useWiretapSocket() {
               },
             };
           }
+          if (msg.lane === 3) {
+            return {
+              ...prev,
+              lane3: {
+                ...prev.lane3,
+                status: msg.status || "VERIFIED",
+                streamUrl: msg.stream_url || prev.lane3.streamUrl,
+              },
+            };
+          }
           return {
             ...prev,
             lane1: {
               ...prev.lane1,
               status: msg.status || "VERIFIED",
-              title: msg.title,
-              spotLabel: msg.spot_label,
-              spotValue: msg.spot_value,
-              claimedLabel: msg.claimed_label,
-              claimedValue: msg.claimed_value,
-              markup: msg.markup_badge,
+              title: msg.title || prev.lane1.title,
+              spotLabel: msg.spot_label || prev.lane1.spotLabel,
+              spotValue: msg.spot_value || prev.lane1.spotValue,
+              claimedLabel: msg.claimed_label || prev.lane1.claimedLabel,
+              claimedValue: msg.claimed_value || prev.lane1.claimedValue,
+              markup: msg.markup_badge || prev.lane1.markup,
             },
           };
         });
