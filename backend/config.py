@@ -17,6 +17,11 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 AGENTQL_API_KEY = os.getenv("AGENTQL_API_KEY", "")
 MODAL_TOKEN_ID = os.getenv("MODAL_TOKEN_ID", "")
 MODAL_TOKEN_SECRET = os.getenv("MODAL_TOKEN_SECRET", "")
+MODAL_KOKORO_ENDPOINT = os.getenv(
+    "MODAL_KOKORO_ENDPOINT",
+    "https://ripun-j-kashyap--zerotrust-kokoro-tts-kokorovoiceservice-0ffed5.us-east.modal.run",
+)
+KOKORO_TIMEOUT_SECONDS = float(os.getenv("KOKORO_TIMEOUT_SECONDS", "1.0"))
 
 # Execution & Portal Modes: "LIVE" or "HYBRID_FALLBACK"
 # In HYBRID_FALLBACK mode, external requests switch to local portal mirrors if they exceed PORTAL_TIMEOUT_SECONDS.

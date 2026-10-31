@@ -23,6 +23,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from pydantic import BaseModel
+import httpx
 
 # Ensure workspace root is in sys.path
 BASE_ROOT = Path(__file__).resolve().parent.parent
@@ -35,6 +36,8 @@ from backend.config import (
     BACKEND_PORT,
     GEMINI_API_KEY,
     TINYFISH_API_KEY,
+    MODAL_KOKORO_ENDPOINT,
+    KOKORO_TIMEOUT_SECONDS,
     PORTAL_MODE,
 )
 from backend.swarm import VerificationSwarm
@@ -167,21 +170,71 @@ class SynthesizeRequest(BaseModel):
     text: str
 
 
+async def synthesize_counter_speech(
+    text: str,
+    voice: str = "af_heart",
+    speed: float = 0.85,
+    timeout_sec: float = KOKORO_TIMEOUT_SECONDS,
+) -> tuple[str, str, float]:
+    """
+    Synthesizes counter-offer audio using Modal Serverless GPU (Kokoro-82M).
+    Falls back to cached local WAV file if MODAL_KOKORO_ENDPOINT is unconfigured,
+    if the request takes >1.0s (or timeout_sec), or if an error occurs.
+    Returns (audio_base64_data_uri, audio_source, latency_ms).
+    """
+    t0 = time.time()
+
+    if MODAL_KOKORO_ENDPOINT:
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await asyncio.wait_for(
+                    client.post(
+                        MODAL_KOKORO_ENDPOINT,
+                        json={"text": text, "voice": voice, "speed": speed},
+                    ),
+                    timeout=timeout_sec,
+                )
+                if resp.status_code == 200:
+                    payload = resp.json()
+                    b64_audio = payload.get("audio_base64", "")
+                    if b64_audio:
+                        if not b64_audio.startswith("data:"):
+                            b64_audio = f"data:audio/wav;base64,{b64_audio}"
+                        latency_ms = (time.time() - t0) * 1000
+                        return b64_audio, "MODAL_GPU", latency_ms
+                else:
+                    print(f"[Synthesizer] Modal TTS returned status {resp.status_code}")
+        except asyncio.TimeoutError:
+            print(f"[Synthesizer] Modal TTS request exceeded {timeout_sec}s timeout. Engaging local WAV fallback.")
+        except Exception as e:
+            print(f"[Synthesizer] Modal TTS fallback triggered ({type(e).__name__}: {e})")
+
+    # Local WAV Fallback
+    b64_fallback = ""
+    if COUNTER_WAV_FILE.exists():
+        with open(COUNTER_WAV_FILE, "rb") as f:
+            b64_fallback = f"data:audio/wav;base64,{base64.b64encode(f.read()).decode('utf-8')}"
+    latency_ms = (time.time() - t0) * 1000
+    return b64_fallback, "FALLBACK_LOCAL_WAV", latency_ms
+
+
 @app.post("/api/synthesize-counter")
 async def api_synthesize_counter(req: SynthesizeRequest):
     """
     Synthesizes counter-offer text to audio.
-    Uses cached high-quality WAV if matching stage script, or synthesizes on-demand.
+    Dispatches to Modal Serverless GPU (Kokoro-82M) with <1.0s fallback to local asset.
     """
-    if COUNTER_WAV_FILE.exists():
-        with open(COUNTER_WAV_FILE, "rb") as f:
-            b64_audio = base64.b64encode(f.read()).decode("utf-8")
-        return {
-            "status": "SUCCESS",
-            "audio_base64": f"data:audio/wav;base64,{b64_audio}",
-            "text": req.text,
-        }
-    return JSONResponse(status_code=500, content={"error": "Counter audio asset not found"})
+    audio_uri, source, latency_ms = await synthesize_counter_speech(req.text)
+    if not audio_uri:
+        return JSONResponse(status_code=500, content={"error": "Counter audio asset not found"})
+
+    return {
+        "status": "SUCCESS",
+        "audio_base64": audio_uri,
+        "audio_source": source,
+        "latency_ms": round(latency_ms, 2),
+        "text": req.text,
+    }
 
 
 # -----------------------------------------------------------------------------
@@ -324,17 +377,18 @@ async def run_injected_audio_wiretap(websocket: WebSocket, session_state: Dict[s
                 "timestamp": time.time(),
             })
 
-        # Load synthesized counter audio
-        counter_b64 = ""
-        if COUNTER_WAV_FILE.exists():
-            with open(COUNTER_WAV_FILE, "rb") as f:
-                counter_b64 = base64.b64encode(f.read()).decode("utf-8")
+        # Synthesize counter audio via Modal GPU Kokoro (with 1.0s fallback to local asset)
+        counter_b64, audio_source, synth_latency_ms = await synthesize_counter_speech(
+            compilation["counter_script"]
+        )
 
         # Send Armed Counter-Offer Audio
         await websocket.send_json({
             "type": "COUNTER_AUDIO_READY",
             "script": compilation["counter_script"],
-            "audio_base64": f"data:audio/wav;base64,{counter_b64}",
+            "audio_base64": counter_b64,
+            "audio_source": audio_source,
+            "synth_latency_ms": round(synth_latency_ms, 2),
             "savings": compilation["broker_savings"],
             "proposed_rate": compilation["proposed_rate"],
             "original_rate": compilation["original_rate"],
