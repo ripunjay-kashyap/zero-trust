@@ -215,9 +215,17 @@ export function useWiretapSocket() {
   }, []);
 
   const playCounterAudio = useCallback(() => {
+    // If audio is already loaded or in ref, play it
     if (counterAudioRef.current) {
       counterAudioRef.current.currentTime = 0;
       counterAudioRef.current.play().catch((err) => {
+        console.error("Audio playback error:", err);
+      });
+    } else {
+      // Fallback direct URL playback
+      const audio = new Audio(`http://localhost:8000/api/audio/counter.wav?t=${Date.now()}`);
+      counterAudioRef.current = audio;
+      audio.play().catch((err) => {
         console.error("Audio playback error:", err);
       });
     }

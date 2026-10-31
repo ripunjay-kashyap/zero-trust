@@ -116,6 +116,22 @@ async def mock_watchlist(mc_number: str):
     return HTMLResponse("<h3>Watchlist Mirror Not Found</h3>", status_code=404)
 
 
+@app.get("/api/audio/counter.wav")
+async def get_counter_audio():
+    """Serves latest counter strike WAV audio directly."""
+    if COUNTER_WAV_FILE.exists():
+        return FileResponse(COUNTER_WAV_FILE, media_type="audio/wav")
+    return HTMLResponse("Audio not found", status_code=404)
+
+
+@app.get("/api/audio/carrier.wav")
+async def get_carrier_audio():
+    """Serves carrier call #409 WAV audio directly."""
+    if INJECTOR_WAV_FILE.exists():
+        return FileResponse(INJECTOR_WAV_FILE, media_type="audio/wav")
+    return HTMLResponse("Audio not found", status_code=404)
+
+
 @app.get("/health")
 async def health_check():
     return {
