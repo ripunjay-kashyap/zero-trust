@@ -4,70 +4,89 @@
   <meta charset="UTF-8">
   <title>FMCSA SAFER - BLUE STAR FREIGHT LLC (MC-884921)</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: Arial, Helvetica, sans-serif;
       margin: 0;
-      padding: 16px;
+      padding: 12px;
       background-color: #f4f6f9;
       color: #1a1a1a;
-      font-size: 13px;
+      font-size: 12px;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e2e8f0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
     }
     .header-banner {
       background-color: #002d62;
       color: #ffffff;
-      padding: 12px 20px;
+      padding: 10px 14px;
       border-radius: 4px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .header-banner h1 {
       margin: 0;
-      font-size: 18px;
+      font-size: 15px;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
     .header-banner .sub {
-      font-size: 11px;
+      font-size: 10px;
       opacity: 0.85;
     }
     .official-seal {
       font-weight: bold;
-      font-size: 12px;
+      font-size: 11px;
       background: #001a3a;
       padding: 4px 8px;
       border-radius: 3px;
       border: 1px solid #1a4d8c;
+      font-family: monospace;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       background-color: #ffffff;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
       border-radius: 4px;
       overflow: hidden;
     }
     th, td {
       border: 1px solid #d9e1e8;
-      padding: 8px 12px;
+      padding: 6px 10px;
       text-align: left;
     }
     th {
       background-color: #e8eef5;
       color: #002d62;
       font-weight: 600;
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
     .section-title {
       background-color: #1a4d8c !important;
       color: #ffffff !important;
-      font-size: 13px !important;
+      font-size: 12px !important;
       font-weight: bold;
-      padding: 10px 12px;
+      padding: 8px 10px;
     }
     .label-col {
       width: 25%;
@@ -83,10 +102,10 @@
       display: inline-block;
       background-color: #10b981;
       color: #ffffff;
-      padding: 2px 8px;
+      padding: 2px 6px;
       border-radius: 3px;
       font-weight: bold;
-      font-size: 11px;
+      font-size: 10px;
     }
     /* Highlight Target Table */
     #safety-inspection-table th {
@@ -105,13 +124,14 @@
       font-weight: bold;
     }
     .fmcsa-footer {
-      font-size: 11px;
+      font-size: 10px;
       color: #64748b;
       border-top: 1px solid #e2e8f0;
-      padding-top: 12px;
-      margin-top: 24px;
+      padding-top: 8px;
+      margin-top: 16px;
       display: flex;
       justify-content: space-between;
+      font-family: monospace;
     }
   </style>
 </head>
@@ -158,7 +178,7 @@
     </tr>
     <tr id="fleet-power-units-row">
       <td class="label-col">Power Units (Trucks):</td>
-      <td class="val-col" id="power-units" style="font-size: 15px; font-weight: bold; color: #b91c1c;">3</td>
+      <td class="val-col" id="power-units" style="font-size: 14px; font-weight: bold; color: #b91c1c;">3</td>
       <td class="label-col">Drivers:</td>
       <td class="val-col" id="drivers-count">3</td>
     </tr>
@@ -195,7 +215,7 @@
     </tr>
     <tr id="oos-rate-highlight-row">
       <td class="metric-label">Out of Service %</td>
-      <td id="vehicle-oos" class="warning-cell" style="font-size: 15px;">38.5%</td>
+      <td id="vehicle-oos" class="warning-cell" style="font-size: 14px;">38.5%</td>
       <td id="driver-oos">7.7%</td>
       <td id="hazmat-oos">0.0%</td>
     </tr>

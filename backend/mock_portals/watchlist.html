@@ -4,62 +4,81 @@
   <meta charset="UTF-8">
   <title>CarrierWatch Intelligence - Risk Report MC-884921</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
-      padding: 20px;
-      background-color: #0f172a;
+      padding: 12px 14px;
+      background-color: #080c14;
       color: #f1f5f9;
-      font-size: 13px;
+      font-size: 12px;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080c14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
     }
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 16px;
+      padding-bottom: 10px;
       border-bottom: 1px solid #1e293b;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
     .logo-area {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
     .logo-badge {
       background: #dc2626;
       color: #fff;
       font-weight: 800;
-      padding: 6px 10px;
+      padding: 4px 8px;
       border-radius: 4px;
-      letter-spacing: 1px;
-      font-size: 12px;
+      letter-spacing: 0.5px;
+      font-size: 11px;
+      font-family: ui-monospace, monospace;
     }
     .title {
-      font-size: 18px;
+      font-size: 15px;
       font-weight: 700;
       color: #ffffff;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
     .card {
-      background-color: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 16px 20px;
-      margin-bottom: 16px;
+      background-color: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
     }
     .alert-banner {
       background: rgba(220, 38, 38, 0.15);
       border: 1px solid #dc2626;
       color: #fca5a5;
-      padding: 14px 18px;
+      padding: 10px 14px;
       border-radius: 6px;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .alert-banner .headline {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 700;
       color: #ef4444;
       display: flex;
@@ -69,26 +88,28 @@
     .risk-pill {
       background-color: #dc2626;
       color: #ffffff;
-      padding: 4px 12px;
-      border-radius: 12px;
+      padding: 3px 10px;
+      border-radius: 10px;
       font-weight: 800;
-      font-size: 11px;
-      letter-spacing: 1px;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      font-family: ui-monospace, monospace;
     }
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 12px;
     }
     .field-label {
       color: #94a3b8;
-      font-size: 11px;
+      font-size: 10px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
+      font-family: ui-monospace, monospace;
     }
     .field-value {
-      font-size: 14px;
+      font-size: 13px;
       color: #ffffff;
       font-weight: 600;
     }
@@ -96,22 +117,24 @@
       color: #f87171;
     }
     .violation-list {
-      margin: 12px 0 0 0;
-      padding-left: 20px;
+      margin: 8px 0 0 0;
+      padding-left: 18px;
       color: #fca5a5;
+      font-size: 12px;
     }
     .violation-list li {
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       line-height: 1.4;
     }
     .metadata-row {
       display: flex;
       justify-content: space-between;
       color: #64748b;
-      font-size: 11px;
-      margin-top: 24px;
+      font-size: 10px;
+      margin-top: 16px;
       border-top: 1px solid #1e293b;
-      padding-top: 12px;
+      padding-top: 10px;
+      font-family: ui-monospace, monospace;
     }
   </style>
 </head>
@@ -122,13 +145,13 @@
       <span class="logo-badge">WATCHLIST</span>
       <span class="title">Freight Fraud Intelligence Registry</span>
     </div>
-    <div id="live-indicator" style="color: #10b981; font-weight: 600; font-size: 11px;">● LIVE REGISTRY SYNCED</div>
+    <div id="live-indicator" style="color: #10b981; font-weight: 600; font-size: 11px; font-family: ui-monospace, monospace;">● LIVE REGISTRY SYNCED</div>
   </div>
 
   <div class="alert-banner" id="watchlist-alert">
     <div>
       <div class="headline">CRITICAL RISK: KNOWN VIRTUAL SUITE / CHAMELEON IDENTITY</div>
-      <div style="margin-top: 4px; font-size: 12px; color: #cbd5e1;">Carrier address matches a high-frequency virtual shared office associated with double-brokering activities.</div>
+      <div style="margin-top: 3px; font-size: 11px; color: #cbd5e1;">Carrier address matches a high-frequency virtual shared office associated with double-brokering activities.</div>
     </div>
     <span class="risk-pill" id="risk-badge">HIGH RISK</span>
   </div>
@@ -144,11 +167,11 @@
         <div class="field-value" id="carrier-mc-dot">MC-884921 / USDOT 2519409</div>
       </div>
     </div>
-    <div style="margin-top: 14px;">
+    <div style="margin-top: 10px;">
       <div class="field-label">Physical Registered Address</div>
       <div class="field-value warning-text" id="registered-address">9800 Richmond Ave Suite 400, Houston, TX 77042</div>
     </div>
-    <div style="margin-top: 14px;">
+    <div style="margin-top: 10px;">
       <div class="field-label">Address Classification</div>
       <div class="field-value warning-text" id="address-type">Virtual Office / Shared Workspace (Regus Business Center)</div>
     </div>

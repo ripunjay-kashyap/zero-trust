@@ -234,7 +234,8 @@ export function useWiretapSocket() {
       });
     } else {
       // Fallback direct URL playback
-      const audio = new Audio(`http://localhost:8000/api/audio/counter.wav?t=${Date.now()}`);
+      const host = typeof window !== "undefined" ? window.location.hostname || "localhost" : "localhost";
+      const audio = new Audio(`http://${host}:8000/api/audio/counter.wav?t=${Date.now()}`);
       counterAudioRef.current = audio;
       setIsCounterSpeaking(true);
       audio.onended = () => {

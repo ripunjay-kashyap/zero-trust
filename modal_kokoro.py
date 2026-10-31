@@ -4,7 +4,6 @@ Deploys on Modal Serverless GPU (NVIDIA T4).
 Synthesizes deterministic counter-offer script into 24kHz WAV in ~250ms (< $0.001/run).
 """
 
-import os
 import io
 import base64
 import modal
@@ -20,10 +19,11 @@ kokoro_image = (
         "soundfile>=0.12.1",
         "torch>=2.2.0",
         "fastapi[standard]>=0.115.0",
+        "numpy",
     )
     .run_commands(
         # Bake weights into container layer to eliminate runtime cold starts
-        "python -c 'from kokoro import KPipeline; KPipeline(lang_code=\"a\")'"
+        "python -c 'from kokoro import KPipeline; p = KPipeline(lang_code=\"a\"); list(p(\"Pre-warming ZeroTrust Kokoro TTS.\", voice=\"af_heart\"))'"
     )
 )
 
@@ -36,28 +36,38 @@ kokoro_image = (
 class KokoroVoiceService:
     @modal.enter()
     def load_model(self):
+        import torch
         from kokoro import KPipeline
-        # Initialize American English pipeline with default voice 'af_heart'
-        self.pipeline = KPipeline(lang_code="a")
+        # Initialize American English pipeline with GPU device if available
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.pipeline = KPipeline(lang_code="a", device=device)
 
-    @modal.method()
-    def synthesize_wav(self, text: str, voice: str = "af_heart", speed: float = 0.85) -> bytes:
+    def _synthesize_wav(self, text: str, voice: str = "af_heart", speed: float = 0.85) -> bytes:
         import soundfile as sf
+        import numpy as np
+
         generator = self.pipeline(text, voice=voice, speed=speed)
         audio_chunks = []
         sample_rate = 24000
         for _, _, audio in generator:
+            if hasattr(audio, "cpu"):
+                audio = audio.cpu().numpy()
+            if hasattr(audio, "squeeze"):
+                audio = audio.squeeze()
             audio_chunks.append(audio)
-            
-        import torch
+
         if audio_chunks:
-            full_audio = torch.cat(audio_chunks, dim=-1).cpu().numpy()
+            full_audio = np.concatenate(audio_chunks, axis=0)
         else:
-            full_audio = torch.zeros(sample_rate).numpy()
+            full_audio = np.zeros(sample_rate, dtype=np.float32)
 
         buffer = io.BytesIO()
         sf.write(buffer, full_audio, sample_rate, format="WAV")
         return buffer.getvalue()
+
+    @modal.method()
+    def synthesize_wav(self, text: str, voice: str = "af_heart", speed: float = 0.85) -> bytes:
+        return self._synthesize_wav(text=text, voice=voice, speed=speed)
 
     @modal.fastapi_endpoint(method="POST")
     def synthesize_endpoint(self, payload: dict):
@@ -67,7 +77,7 @@ class KokoroVoiceService:
         if not text:
             return {"error": "Missing text parameter"}
 
-        wav_bytes = self.synthesize_wav(text=text, voice=voice, speed=speed)
+        wav_bytes = self._synthesize_wav(text=text, voice=voice, speed=speed)
         b64_audio = base64.b64encode(wav_bytes).decode("utf-8")
         return {
             "status": "SUCCESS",

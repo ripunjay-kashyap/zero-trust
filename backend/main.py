@@ -105,14 +105,22 @@ async def shutdown_event():
 @app.get("/mock/fmcsa/{mc_number}", response_class=HTMLResponse)
 async def mock_fmcsa(mc_number: str):
     if MOCK_FMCSA_FILE.exists():
-        return FileResponse(MOCK_FMCSA_FILE, media_type="text/html")
+        return FileResponse(
+            MOCK_FMCSA_FILE,
+            media_type="text/html",
+            headers={"X-Frame-Options": "ALLOWALL", "Content-Security-Policy": "frame-ancestors *"},
+        )
     return HTMLResponse("<h3>FMCSA Mirror Not Found</h3>", status_code=404)
 
 
 @app.get("/mock/watchlist/{mc_number}", response_class=HTMLResponse)
 async def mock_watchlist(mc_number: str):
     if MOCK_WATCHLIST_FILE.exists():
-        return FileResponse(MOCK_WATCHLIST_FILE, media_type="text/html")
+        return FileResponse(
+            MOCK_WATCHLIST_FILE,
+            media_type="text/html",
+            headers={"X-Frame-Options": "ALLOWALL", "Content-Security-Policy": "frame-ancestors *"},
+        )
     return HTMLResponse("<h3>Watchlist Mirror Not Found</h3>", status_code=404)
 
 

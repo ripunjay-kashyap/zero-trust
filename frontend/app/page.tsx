@@ -52,23 +52,25 @@ export default function WarRoomHUD() {
           />
 
           {/* Bluff Receipt Stack (Scrollable) */}
-          <div className="flex-1 bg-[#0f172a] rounded-lg border border-[#1e293b] p-3 flex flex-col gap-2 overflow-hidden shadow-lg">
+          <div className="flex-1 bg-[#0f172a] rounded-lg border border-[#1e293b] p-3 flex flex-col gap-2 overflow-hidden">
             <div className="flex items-center justify-between pb-2 border-b border-[#1e293b]">
               <div className="flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-red-500" />
-                <span className="font-mono text-xs font-bold text-slate-200 tracking-wider">
+                <ShieldAlert className="w-4 h-4 text-red-400" />
+                <span className="font-mono text-xs font-bold text-slate-200 tracking-wide">
                   BLUFF RECEIPTS ({bluffReceipts.length} DETECTED)
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-slate-400">DETERMINISTIC 0.01ms DIFF</span>
+              <span className="text-xs font-mono text-slate-400">
+                DETERMINISTIC 0.01ms DIFF
+              </span>
             </div>
 
-            <div className="flex-1 overflow-y-auto flex flex-col gap-2.5 pr-1">
+            <div className="flex-1 overflow-y-auto flex flex-col gap-3 pr-1">
               {bluffReceipts.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 font-mono text-xs">
-                  <AlertCircle className="w-6 h-6 mb-2 opacity-40 text-slate-400" />
-                  <span>No bluffs detected yet.</span>
-                  <span className="text-[11px] text-slate-600 mt-1">
+                <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400 font-mono text-xs">
+                  <AlertCircle className="w-6 h-6 mb-2 text-slate-500" />
+                  <span className="text-slate-300 font-medium">No bluffs detected yet.</span>
+                  <span className="text-xs text-slate-500 mt-1">
                     Browser swarm will speculatively analyze claims mid-speech.
                   </span>
                 </div>

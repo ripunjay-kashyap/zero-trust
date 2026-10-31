@@ -273,7 +273,8 @@ class VerificationSwarm:
         Captures STREAMING_URL event immediately and parses double-broker / virtual office flags.
         """
         t0 = time.time()
-        streaming_url = self._prewarmed_streaming_url or f"https://agent.tinyfish.ai/live/stream/carrier-watchlist-{mc_number}"
+        # Default to local verified watchlist portal mirror (100% reliable stage defense)
+        streaming_url = self._prewarmed_streaming_url or MOCK_WATCHLIST_URL
         is_live_stream = bool(self._prewarmed_streaming_url)
         watchlist_data = dict(FALLBACK_WATCHLIST_DATA)
 

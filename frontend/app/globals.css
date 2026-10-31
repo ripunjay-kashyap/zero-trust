@@ -15,6 +15,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Tactical Monospace Figures */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Custom Tactical Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -29,32 +34,4 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #334155;
-}
-
-@keyframes pulseGlowRed {
-  0%, 100% {
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-    border-color: #ef4444;
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(239, 68, 68, 0.85);
-    border-color: #dc2626;
-  }
-}
-
-.glow-red {
-  animation: pulseGlowRed 2s infinite ease-in-out;
-}
-
-@keyframes pulseEmerald {
-  0%, 100% {
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 28px rgba(16, 185, 129, 0.85);
-  }
-}
-
-.pulse-emerald {
-  animation: pulseEmerald 1.8s infinite ease-in-out;
 }
